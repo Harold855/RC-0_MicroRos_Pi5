@@ -3,7 +3,7 @@
 > Guía de armado. El PDF final debe tener 1 página. Todo dato sale de los CSV reales; nada se rellena "para que cuadre".
 > Las tablas se generan con: `python3 scripts/generar_tablas_informe.py`. El texto lo escribe el grupo.
 
-**Integrantes y roles:** (nombres y rol)  ·  **ROS_DOMAIN_ID:** 8  ·  **r final:** ___ m  ·  **b_eff final:** ___ m
+**Integrantes y roles:** (nombres y rol)  ·  **ROS_DOMAIN_ID:** ___ (real, el del Agent/placa)  ·  **r final:** ___ m  ·  **b_eff final:** ___ m
 
 ## a) Predicciones (copiadas sin cambios de `informe/predicciones.md`)
 (3 predicciones, breves)

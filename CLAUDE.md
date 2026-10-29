@@ -11,7 +11,7 @@ Idioma de trabajo: español. Este archivo resume el contexto vigente; si algo co
   | Recta 1.0 m | B4–C4, oeste → este (inicio A4\|B4, fin C4\|D4) | C4–D4, este → oeste (inicio D4\|E4, fin B4\|C4) |
   | Giro 360° | tile B2, **antihorario** (`angular.z` +) | tile A1, **horario** (`angular.z` −) |
 
-- `ROS_DOMAIN_ID = 8` (grupo 8; el 92 del JetCobot era un dominio compartido y no se usa). Cómo fijarlo en la placa: lo explica el docente.
+- **Dominio ROS:** el contenedor `micro_ros_agent` del RosCar 8 corre con `ROS_DOMAIN_ID=20` (verificado con `docker inspect`); el reto pide "equipo n → n" (8). Hasta que el docente diga cuál y cómo cambiarlo, se trabaja en **20** (`config/entorno_rc0.sh`); no se toca el Agent. El 92 del JetCobot no se usa.
 - Repo: el reto pide `capytown_G<n>` con tag `v1.0-rc0`; el nombre actual es `RC-0_MicroRos_Pi5` → renombrar antes de entregar (confirmar con el docente).
 - Quien trabaja: el grupo, desde el Pi 400 (Ubuntu) o una laptop, por TigerVNC/SSH. El Wi-Fi del robot probablemente no tiene internet.
 - El docente permite IA para código y depuración; la nota depende de la **defensa individual sin código a la vista**: el autor debe entender todo lo que se genere.

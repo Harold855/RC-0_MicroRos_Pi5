@@ -59,7 +59,7 @@ sh ros2_humble.sh
 ```
 ```bash
 # [DOCKER ROS 2] ya dentro del contenedor
-source config/entorno_rc0.sh      # exporta ROS_DOMAIN_ID=8 solo en esta terminal
+source config/entorno_rc0.sh      # exporta ROS_DOMAIN_ID=20 (el del Agent del robot) solo en esta terminal
 echo "$ROS_DISTRO $ROS_DOMAIN_ID"
 ```
 

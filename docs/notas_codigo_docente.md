@@ -9,7 +9,7 @@ Archivos revisados: `calibrate_beff.py`, `odom_corrector.py`, `fake_robot.py`, `
 - Re-escala la odometría con factores `k_lin` (distancia) y `k_ang` (giro) calculados a partir de esos parámetros (líneas 72-78 y 112-146). **Lee ese código y deduce qué reporta `/odom` antes y después de cambiar `r` o `b_eff`**: es la base de las preguntas de defensa 5 a 8.
 - Consecuencias: `/odom` depende del YAML; `/odom_raw` no. Si el nodo no está corriendo, **no existe `/odom`**. Hay que registrar qué valores de arranque tenía.
 - La pose se acumula con incrementos de `/odom_raw`: si el robot se reinicia y `/odom_raw` vuelve a 0, `/odom` da un salto (lo detecta `detectar_reinicios`). `/odom_reset` (std_msgs/Empty) pone a cero la pose del corrector.
-- Dice `ROS_DOMAIN_ID=20` en un mensaje de aviso: es una pista del docente, **no** nuestra decisión (grupo 8 → 8). Comprobar qué dominio usa realmente la placa (ver abajo).
+- Su mensaje de aviso dice `ROS_DOMAIN_ID=20`, y **el contenedor `micro_ros_agent` del RosCar 8 efectivamente corre con 20**. El reto pide el número de grupo (8): preguntar al docente cuál debe usarse y cómo cambiarlo; no tocar el Agent.
 
 ## `calibrate_beff.py`
 - Parámetros: `b_eff` (por defecto 0.24; **debe coincidir con el YAML**), `target_angle_deg` (360), `angular_vel` (0.5, + = antihorario), `cmd_vel_topic`, **`odom_topic` (por defecto `/odom`)**.
@@ -52,3 +52,9 @@ ls ~/reset_esp32.sh
 docker inspect micro_ros_agent --format '{{.Config.Env}} {{.Config.Cmd}}'
 docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 ```
+
+## Lo confirmado en el RosCar 8 (salida real de la Pi)
+- Contenedores: `micro_ros_agent` (`microros/micro-ros-agent:humble`) y `ros2_dev` (`yahboomtechnology/ros-humble:4.1.2`).
+- Agent: `serial --dev /dev/ttyUSB0 -b 921600 -v4`, `ROS_DOMAIN_ID=20`, `RMW_IMPLEMENTATION=rmw_fastrtps_cpp`, `MICROROS_DISABLE_SHM=1`.
+- `~/ros2_humble.sh` solo hace `docker start ros2_dev` y `docker exec -it -e DISPLAY ros2_dev bash`: **no crea contenedores**. `ros2_dev` sobrevive a reinicios (`--restart unless-stopped`) y conserva lo que se instale dentro; el workspace vive en `/home/pi/yahboomcar_ws` (host).
+- Existe `~/reset_esp32.sh` (lo mencionan los scripts del docente para reconectar la placa).

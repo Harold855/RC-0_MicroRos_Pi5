@@ -5,7 +5,7 @@ Reto 0 del Proyecto CapyTown, usando un RosCar (Robot MicroRos_Pi5), donde se pr
 - Integrantes y roles (Integración / Control / Planificación / Percepción): *por definir*
 - Sección: **S-003** · Variantes: **A1 «Torre»** (calibración) y **A2 «Escalón»** (validación)
 - RosCar: **8** (Wi-Fi `RosCar8`)
-- `ROS_DOMAIN_ID`: **8** *(pendiente de confirmar con el docente cómo configurarlo en la placa)*
+- `ROS_DOMAIN_ID`: el Agent del RosCar 8 corre con **20** (`docker inspect micro_ros_agent`); el reto pide el número de grupo (**8**). *Pendiente: preguntar al docente cuál debe ser y cómo cambiarlo.* Hasta entonces se trabaja en 20.
 - `r` final: *pendiente* · `b_eff` final: *pendiente*
 - Tópico de odometría real: *por confirmar en el robot (`/odom_raw` o `/odom`)*
 - Unidades de los CSV: distancias en metros y ángulos en grados (los encabezados del reto no llevan unidades).
