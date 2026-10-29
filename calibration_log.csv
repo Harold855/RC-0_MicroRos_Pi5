@@ -1,1 +1,1 @@
-iteracion,b_eff_usado,theta_reportado_deg,theta_medido_deg,error_%,b_eff_propuesto
+timestamp,iteracion,b_eff_antes,objetivo_deg,medido_deg,b_eff_despues,error_pct

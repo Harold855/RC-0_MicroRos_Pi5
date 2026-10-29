@@ -231,6 +231,8 @@ def ejecutar() -> int:
                 odom = sorted(n for n, ts in self.get_topic_names_and_types() if TIPO_ODOM in ts)
                 if odom or time.monotonic() > fin:
                     break
+            if len(odom) > 1 and "/odom" in odom:  # odom_corrector: coexisten /odom_raw y /odom
+                return "/odom"
             if len(odom) != 1:
                 raise RuntimeError(
                     "no se pudo elegir la odometría: topics nav_msgs/Odometry vistos = " + (", ".join(odom) or "ninguno")

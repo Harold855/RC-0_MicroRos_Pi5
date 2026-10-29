@@ -122,7 +122,7 @@ def test_reinicio_dentro_del_tramo_se_avisa():
 # ---------------------------------------------------------------- CSV
 def args(**kw):
     base = dict(corrida=None, r=None, d_real=None, desvio_m=None, desvio_de_odom=False, variante=None,
-                valor_real=None, iteracion=None, b_eff_usado=None, theta_medido=None, b_eff_propuesto=None,
+                valor_real=None, objetivo_deg=None, iteracion=None, b_eff_usado=None, theta_medido=None, b_eff_propuesto=None,
                 denominador="reportado")
     base.update(kw)
     return argparse.Namespace(**base)
@@ -160,7 +160,9 @@ def test_fila_calibracion_no_calcula_b_eff_propuesto():
     with pytest.raises(ValueError, match="--b-eff-propuesto"):
         ab.construir_fila("calibracion", r, args(iteracion=1, b_eff_usado=0.2, theta_medido=348.5))
     fila = ab.construir_fila("calibracion", r, args(iteracion=1, b_eff_usado=0.2, theta_medido=348.5, b_eff_propuesto=0.25))
-    assert fila[-1] == "0.2500"  # el valor tecleado por el grupo, sin tocar
+    assert len(fila) == len(ab.ENCABEZADOS["calibracion"]) == 7
+    assert fila[5] == "0.2500"  # b_eff_despues: el valor tecleado por el grupo, sin tocar
+    assert fila[3] == "360" and fila[4] == "348.5" and fila[6] == "3.19"  # error sobre el objetivo, como calibrate_beff.py
 
 
 def test_anexar_crea_encabezado_en_archivo_con_solo_salto_de_linea(tmp_path):

@@ -32,10 +32,12 @@ Idioma de trabajo: español. Este archivo resume el contexto vigente; si algo co
 ## Mapa del repositorio
 - `capytown_esan/`: `odom_utils.py` (matemática), `plot_odom.py` (E6), `analizar_bag.py` (bag → CSV), `secuencia_rc0.py` (recta/giro con dry-run por defecto).
 - `scripts/`: Parte A (`parteA_host.sh`, `parteA_contenedor.sh`, `instalar_rosbag2.sh`), bags (`grabar_bag.sh`, `fijar_bag_final.sh`, `respaldar_bags.sh`), `verificacion_entrega.py`, `generar_tablas_informe.py`.
-- `docs/`: `guia_trabajo_roscar.md`, `hoja_de_campo_rc0.md`. `informe/`: predicciones y plantilla. `test/`: `python3 -m pytest test`.
+- `docs/`: `guia_trabajo_roscar.md`, `hoja_de_campo_rc0.md`, `notas_codigo_docente.md`. `informe/`: predicciones y plantilla. `test/`: `python3 -m pytest test`.
 
 ## Pendientes por verificar en el robot
-Topic de odometría (`/odom_raw` vs `/odom`) · si el bringup incluye el Agent · dónde y con qué clave se aplican `r` y `b_eff` (¿driver de la Pi o firmware?) · si `calibrate_beff` lee `/odom` u `/odom_raw`, acepta velocidad negativa y cómo pide el ángulo medido · definición del error angular (por defecto: sobre el ángulo reportado) · watchdog de `/cmd_vel` y efecto del botón de reinicio · usuario SSH y nombre del contenedor · internet en `RosCar8`.
+Qué `launch` levanta `odom_corrector` y con qué valores de arranque (YAML real) · qué dominio usa de verdad la placa (el docente menciona 20; nosotros usamos 8) · si el Agent (contenedor `micro_ros_agent`, serie `/dev/ttyUSB0`) arranca solo · definición del error angular (el script del docente divide por el objetivo) · watchdog de `/cmd_vel` y efecto del botón de reinicio · usuario SSH (`pi`) y entorno ROS dentro de `ros2_dev` · internet en `RosCar8` (no hay) · reloj de la Pi desfasado (fechas de logs/bags no fiables).
+
+Hallazgos del código del docente: ver `docs/notas_codigo_docente.md` (`r` y `b_eff` se aplican en `odom_corrector`, no en el firmware; `calibrate_beff` admite giro horario y escribe su propio `calibration_log.csv`).
 
 ## Estado
 Hecho solo con datos sintéticos y sin ROS real: ver `README.md`. Aún no se ha tocado el robot.

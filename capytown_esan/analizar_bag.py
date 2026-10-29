@@ -21,6 +21,8 @@ Por defecto IMPRIME y no escribe nada. Solo con --escribir añade UNA fila al CS
 indicado (nunca sobrescribe; si el archivo tiene contenido, su encabezado debe
 coincidir exactamente). La regla para corregir `r` o `b_eff` NO está aquí: la
 deduce el grupo; --b-eff-propuesto se teclea, no se calcula.
+Nota: calibrate_beff.py (docente) ya escribe su propia fila en calibration_log.csv con este mismo
+encabezado; --csv calibracion solo sirve para anotar a mano una iteración que no pasó por ese script.
 
 Unidades: las distancias van en METROS y los ángulos en GRADOS en los CSV
 (los encabezados del reto no llevan unidades; dígalo en el README).
@@ -42,6 +44,7 @@ import argparse
 import csv
 import math
 import os
+from datetime import datetime
 import sys
 from typing import Dict, List, Optional, Sequence
 
@@ -53,8 +56,8 @@ except ImportError:  # pragma: no cover
 ENCABEZADOS = {
     "linea_recta": ["corrida", "r", "d_real", "d_odom", "error_%", "desvio_lateral"],
     "validacion": ["variante", "prueba", "valor_real", "valor_odom", "error_%"],
-    # El reto no fija este encabezado; es una propuesta del contexto del proyecto.
-    "calibracion": ["iteracion", "b_eff_usado", "theta_reportado_deg", "theta_medido_deg", "error_%", "b_eff_propuesto"],
+    # El reto no fija este encabezado. Es el que escribe calibrate_beff.py (docente) en calibration_log.csv.
+    "calibracion": ["timestamp", "iteracion", "b_eff_antes", "objetivo_deg", "medido_deg", "b_eff_despues", "error_pct"],
 }
 
 
@@ -142,9 +145,11 @@ def construir_fila(tipo: str, r: Dict, a: argparse.Namespace) -> List[str]:
         return [a.variante, r["prueba"], _fmt(float(a.valor_real)), _fmt(float(odom)), _fmt(err)]
     if tipo == "calibracion":
         exige("iteracion", "b_eff_usado", "theta_medido", "b_eff_propuesto")
-        rep = abs(r["theta_odom_deg"])
-        err = ou.error_pct_angular(rep, a.theta_medido, a.denominador)
-        return [str(a.iteracion), _fmt(float(a.b_eff_usado)), _fmt(rep), _fmt(float(a.theta_medido)), _fmt(err), _fmt(float(a.b_eff_propuesto))]
+        objetivo = a.objetivo_deg if a.objetivo_deg is not None else 360.0
+        err = ou.error_pct_angular(objetivo, a.theta_medido, a.denominador)
+        ahora = datetime.now().isoformat(timespec="seconds")
+        return [ahora, str(a.iteracion), _fmt(float(a.b_eff_usado)), f"{objetivo:.0f}", f"{float(a.theta_medido):.1f}",
+                _fmt(float(a.b_eff_propuesto)), f"{err:.2f}"]
     raise ValueError(f"tipo de CSV desconocido: {tipo}")
 
 
@@ -199,6 +204,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     g.add_argument("--iteracion", type=int)
     g.add_argument("--b-eff-usado", type=float, dest="b_eff_usado")
     g.add_argument("--theta-medido", type=float, dest="theta_medido")
+    g.add_argument("--objetivo-deg", type=float, dest="objetivo_deg", help="giro objetivo [°] (por defecto 360)")
     g.add_argument("--b-eff-propuesto", type=float, dest="b_eff_propuesto", help="lo calcula el grupo, no este script")
     a = ap.parse_args(argv)
     if a.theta_real is not None and a.theta_medido is None:

@@ -1,7 +1,11 @@
 # Parámetros efectivos del RosCar 8 para RC-0 — PLANTILLA del repositorio.
-# Aquí se anotan los valores FINALES aceptados; el archivo que consume el robot es otro y está en el robot.
-# [VERIFICAR] Las claves reales: el reto habla de wheel_radius y b_eff; una presentación usa wheel_separation.
-# [VERIFICAR] Dónde se aplican (driver en la Pi o firmware del ESP32) y si basta reiniciar el bringup.
+# Aquí se anotan los valores FINALES aceptados. El archivo que consume el robot está en el robot (paquete
+# capytown_esan, nodo odom_corrector) y es el que hay que editar allí; este solo guarda lo que adoptaron.
+#
+# Claves según odom_corrector.py (docente): wheel_radius y wheel_separation (b_eff).
+# El nodo re-escala /odom_raw con estos valores y publica /odom; los valores del firmware
+# (firmware_wheel_radius = r0, firmware_wheel_separation = b0) NO se tocan.
+# [VERIFICAR] los valores reales de arranque en el YAML del robot, y qué launch levanta odom_corrector.
 # Unidades: metros. null = todavía no calibrado. No inventar valores: salen de la calibración.
-wheel_radius: null   # r efectivo [m]; se calibra primero (recta de 1.0 m)
-b_eff: null          # ancho de vía efectivo [m]; se calibra después (giro de 360°)
+wheel_radius: null       # r efectivo [m]; se calibra primero (recta de 1.0 m)
+wheel_separation: null   # b_eff [m]; se calibra después (giro de 360°)

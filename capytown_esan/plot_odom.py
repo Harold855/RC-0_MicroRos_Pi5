@@ -84,6 +84,8 @@ def elegir_topic(topics_y_tipos: dict, pedido: Optional[str] = None) -> str:
     listado = ", ".join(f"{n} [{t}]" for n, t in sorted(topics_y_tipos.items())) or "(ninguno)"
     if not odom:
         raise ValueError(f"el bag no tiene ningún topic {TIPO_ODOM}. Topics del bag: {listado}")
+    if "/odom" in odom:  # con odom_corrector activo coexisten /odom_raw y /odom: el reto usa /odom
+        return "/odom"
     raise ValueError(f"hay varios topics de odometría ({', '.join(odom)}); indica cuál con --topic")
 
 

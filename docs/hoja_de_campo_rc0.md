@@ -23,7 +23,8 @@ Orden obligatorio: **primero `r` (recta), después `b_eff` (giro). Un solo pará
 | rosbag2: sqlite3 y mcap listados (`scripts/instalar_rosbag2.sh` si falta) | |
 | Captura de `rqt_graph` (nombre del archivo) | |
 | Dónde está `wheel_params.yaml` y claves reales de r y b_eff | |
-| ¿`calibrate_beff` lee `/odom` u `/odom_raw`? ¿Acepta velocidad negativa? | |
+| Qué launch levanta `odom_corrector`; valores de `wheel_radius`/`wheel_separation` al arrancar | |
+| `calibrate_beff`: usa `-p odom_topic:=` correcto (`/odom` o `/odom_raw`) | |
 
 ## 2. Parte B — recta de 1.0 m en A1 (B4–C4, oeste → este) · calibra `r`
 Antes de cada corrida: eje de ruedas sobre la línea de inicio (A4|B4), robot orientado al este, bag grabando
@@ -50,7 +51,7 @@ Corrida final elegida → `bash scripts/fijar_bag_final.sh bags/<bag> rc0_recta`
 | 2 | | | | | | |
 | 3 | | | | | | |
 
-Cada iteración: `analizar_bag.py bags/<bag> --prueba giro --csv calibracion --iteracion N --b-eff-usado <x> --theta-medido <°> --b-eff-propuesto <y> --escribir calibration_log.csv`
+`calibrate_beff` ya escribe su fila en `calibration_log.csv` **del directorio donde lo lances** (lánzalo desde la carpeta del repo). Para anotar a mano una iteración: `analizar_bag.py bags/<bag> --prueba giro --csv calibracion --iteracion N --b-eff-usado <x> --theta-medido <°> --b-eff-propuesto <y> --escribir calibration_log.csv`
 (el propuesto lo calcula el grupo). El **último** giro, grabado → `fijar_bag_final.sh ... rc0_giro`. Valor final → `config/wheel_params.yaml` (+ el del robot).
 
 ## 4. Parte D — validación en A2, sin tocar parámetros

@@ -176,11 +176,16 @@ def test_elegir_topic_falla_listando_los_topics_del_bag():
         plot_odom.elegir_topic({"/odom_raw": plot_odom.TIPO_ODOM}, pedido="/odom")
 
 
-def test_elegir_topic_ambiguo_exige_indicarlo():
-    tipos = {"/odom": plot_odom.TIPO_ODOM, "/odom_raw": plot_odom.TIPO_ODOM}
+def test_elegir_topic_con_odom_y_odom_raw_prefiere_odom():
+    tipos = {"/odom": plot_odom.TIPO_ODOM, "/odom_raw": plot_odom.TIPO_ODOM}  # odom_corrector activo
+    assert plot_odom.elegir_topic(tipos) == "/odom"
+    assert plot_odom.elegir_topic(tipos, pedido="/odom_raw") == "/odom_raw"
+
+
+def test_elegir_topic_ambiguo_sin_odom_exige_indicarlo():
+    tipos = {"/a": plot_odom.TIPO_ODOM, "/b": plot_odom.TIPO_ODOM}
     with pytest.raises(ValueError, match="--topic"):
         plot_odom.elegir_topic(tipos)
-    assert plot_odom.elegir_topic(tipos, pedido="/odom_raw") == "/odom_raw"
 
 
 # ---------------------------------------------------------------- dibujo

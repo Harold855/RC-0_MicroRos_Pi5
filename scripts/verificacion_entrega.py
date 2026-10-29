@@ -39,7 +39,8 @@ Item = Tuple[str, str, str]
 
 ENC_RECTA = ["corrida", "r", "d_real", "d_odom", "error_%", "desvio_lateral"]
 ENC_VALID = ["variante", "prueba", "valor_real", "valor_odom", "error_%"]
-ENC_CALIB = ["iteracion", "b_eff_usado", "theta_reportado_deg", "theta_medido_deg", "error_%", "b_eff_propuesto"]
+# Encabezado que escribe calibrate_beff.py (docente); el reto no fija uno.
+ENC_CALIB = ["timestamp", "iteracion", "b_eff_antes", "objetivo_deg", "medido_deg", "b_eff_despues", "error_pct"]
 BAGS = ["rc0_recta", "rc0_giro", "rc0_val_recta", "rc0_val_giro"]
 ROLES = ["Integración", "Control", "Planificación", "Percepción"]
 
@@ -87,7 +88,7 @@ def revisar_csv(raiz: str) -> List[Item]:
             out.append((ERR, nombre, "contiene datos marcados como SINTETICO"))
             continue
         out.append((OK, nombre + " (encabezado)", ""))
-        col = enc.index("error_%")
+        col = enc.index("error_%") if "error_%" in enc else enc.index("error_pct")
 
         if nombre == "linea_recta.csv":
             if len(filas) < 3:

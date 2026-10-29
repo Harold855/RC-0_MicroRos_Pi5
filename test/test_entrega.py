@@ -14,7 +14,7 @@ import generar_tablas_informe as gt  # noqa: E402
 import verificacion_entrega as ve  # noqa: E402
 
 CAB_R = "corrida,r,d_real,d_odom,error_%,desvio_lateral\n"
-CAB_C = "iteracion,b_eff_usado,theta_reportado_deg,theta_medido_deg,error_%,b_eff_propuesto\n"
+CAB_C = "timestamp,iteracion,b_eff_antes,objetivo_deg,medido_deg,b_eff_despues,error_pct\n"
 CAB_V = "variante,prueba,valor_real,valor_odom,error_%\n"
 
 
@@ -54,8 +54,8 @@ def test_recta_con_error_final_alto_es_error(tmp_path):
 
 
 def test_calibracion_exige_convergencia_menor_a_1_porciento(tmp_path):
-    mal = CAB_C + "1,0.2,360,348.5,3.19,0.2066\n2,0.2066,360,356.2,1.06,0.2088\n"
-    bien = mal + "3,0.2088,360,358.9,0.31,0.2094\n"
+    mal = CAB_C + "2026-10-29T13:00:00,1,0.2,360,348.5,0.2066,3.19\n2026-10-29T13:05:00,1,0.2066,360,356.2,0.2088,1.06\n"
+    bien = mal + "2026-10-29T13:10:00,1,0.2088,360,358.9,0.2094,0.31\n"
     assert [i for i in ve.revisar_csv(repo(tmp_path, calib=mal)) if i[0] == ve.ERR]
     assert not [i for i in ve.revisar_csv(repo(tmp_path, calib=bien)) if i[0] == ve.ERR]
 
