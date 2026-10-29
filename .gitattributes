@@ -1,0 +1,9 @@
+# Fin de línea LF en todo el repositorio: los scripts .sh se ejecutan en Linux (Pi/contenedor)
+# y con CRLF (checkout en Windows) fallan con "$'\r': command not found".
+* text=auto eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.csv text eol=lf
+*.png binary
+*.pdf binary
