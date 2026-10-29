@@ -170,6 +170,37 @@ def ventana_movimiento(
     return inicio, fin
 
 
+def segmentos_movimiento(
+    t: Sequence[float],
+    velocidad: Sequence[float],
+    umbral: float = 0.01,
+    hueco_s: float = 0.5,
+) -> List[Tuple[int, int]]:
+    """Todos los tramos de movimiento, como [(inicio, fin), ...] en orden temporal.
+
+    Dos tramos separados por menos de `hueco_s` segundos de reposo se fusionan
+    (un bache momentáneo de velocidad no parte una corrida en dos). Sirve para
+    bags con varias corridas, p. ej. las dos rectas de validación.
+    """
+    if len(t) != len(velocidad):
+        raise ValueError("t y velocidad deben tener la misma longitud")
+    tramos: List[List[int]] = []
+    en_mov = False
+    for i, v in enumerate(velocidad):
+        if abs(v) > umbral:
+            if not en_mov:
+                if tramos and t[i] - t[tramos[-1][1]] < hueco_s:
+                    tramos[-1][1] = i
+                else:
+                    tramos.append([i, i])
+                en_mov = True
+            else:
+                tramos[-1][1] = i
+        else:
+            en_mov = False
+    return [(a, b) for a, b in tramos]
+
+
 def detectar_reinicios(
     t: Sequence[float],
     poses: Sequence[Pose],

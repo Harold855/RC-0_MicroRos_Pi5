@@ -8,6 +8,7 @@ Reto 0 del Proyecto CapyTown, usando un RosCar (Robot MicroRos_Pi5), donde se pr
 - `ROS_DOMAIN_ID`: **8** *(pendiente de confirmar con el docente cómo configurarlo en la placa)*
 - `r` final: *pendiente* · `b_eff` final: *pendiente*
 - Tópico de odometría real: *por confirmar en el robot (`/odom_raw` o `/odom`)*
+- Unidades de los CSV: distancias en metros y ángulos en grados (los encabezados del reto no llevan unidades).
 - Error angular: se calcula dividiendo por el ángulo reportado *(por confirmar con el docente)*
 
 | Prueba | A1 (calibración) | A2 (validación) |
@@ -16,8 +17,8 @@ Reto 0 del Proyecto CapyTown, usando un RosCar (Robot MicroRos_Pi5), donde se pr
 | Giro de 360° | tile B2, antihorario | tile A1, horario |
 
 ## Estado
-- Hecho (sin robot, con datos sintéticos): `capytown_esan/odom_utils.py`, `capytown_esan/plot_odom.py`, `test/test_plot_math.py`, scripts de diagnóstico de la Parte A.
-- No verificado: lectura de bags reales con `rosbag2_py`, comportamiento del RosCar, calibración. Nada de lo anterior es evidencia de calibración.
+- Hecho (sin robot, con datos sintéticos): `odom_utils.py`, `plot_odom.py`, `analizar_bag.py`, `secuencia_rc0.py` (en `capytown_esan/`), sus pruebas en `test/` y los scripts de diagnóstico de la Parte A.
+- No verificado: lectura de bags reales con `rosbag2_py`, el nodo de `secuencia_rc0.py` contra ROS 2 real (solo se probó su lógica y un nodo simulado), comportamiento del RosCar, calibración. Nada de lo anterior es evidencia de calibración.
 
 ## Cómo reproducir
 ```bash
@@ -26,6 +27,13 @@ python3 -m pytest test
 
 # [DOCKER ROS 2] gráficas de un bag (dos PNG en plots/)
 python3 capytown_esan/plot_odom.py bags/rc0_recta
+
+# [DOCKER ROS 2] números de un bag para los CSV (imprime; solo escribe con --escribir)
+python3 capytown_esan/analizar_bag.py bags/rc0_recta --prueba recta --listar
+python3 capytown_esan/analizar_bag.py bags/rc0_recta --prueba recta --d-real <metros_con_cinta>
+
+# [DOCKER ROS 2] secuencia de prueba: por defecto NO mueve (dry-run). Ver el encabezado del archivo.
+python3 capytown_esan/secuencia_rc0.py --ros-args -p modo:=recta
 
 # [PI HOST] y [DOCKER ROS 2] Parte A: diagnóstico de solo lectura, añade a setup_log.txt
 bash scripts/parteA_host.sh
