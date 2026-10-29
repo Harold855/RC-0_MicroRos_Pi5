@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+# Copias de seguridad locales de bags (los bags entregables van en bags/rc0_*)
+respaldo_bags/
+# Nunca subir credenciales
+*.pem
+*.key
+.env
