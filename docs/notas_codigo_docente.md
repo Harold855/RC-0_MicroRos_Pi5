@@ -58,3 +58,9 @@ docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 - Agent: `serial --dev /dev/ttyUSB0 -b 921600 -v4`, `ROS_DOMAIN_ID=20`, `RMW_IMPLEMENTATION=rmw_fastrtps_cpp`, `MICROROS_DISABLE_SHM=1`.
 - `~/ros2_humble.sh` solo hace `docker start ros2_dev` y `docker exec -it -e DISPLAY ros2_dev bash`: **no crea contenedores**. `ros2_dev` sobrevive a reinicios (`--restart unless-stopped`) y conserva lo que se instale dentro; el workspace vive en `/home/pi/yahboomcar_ws` (host).
 - Existe `~/reset_esp32.sh` (lo mencionan los scripts del docente para reconectar la placa).
+
+## Más hallazgos (segunda salida de la Pi)
+- `~/start_agent_rpi5.sh` es una versión del laboratorio ("rebaño"): **no crea contenedores nuevos**, asegura que `micro_ros_agent` exista y corra con `ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-20}` y muestra sus logs. El original de fábrica (efímero, dominio 0) está en `start_agent_rpi5.sh.orig`. Si los topics no traen datos: botón RST del ESP32. **El dominio 20 parece una configuración deliberada del laboratorio para todos los robots.** [Probable] Preguntar al docente si el dominio "del grupo" (E2) debe ser 20 u 8.
+- `ros2_dev` monta `/home/pi/yahboomcar_ws` (host) en `/root/yahboomcar_ws` (contenedor), además de `/dev`, `/dev/shm` y `/tmp/.X11-unix` (la GUI, p. ej. `rqt_graph`, sale por el escritorio remoto). Copiar el repo a esa carpeta del host lo hace visible dentro, sin `docker cp`.
+- Al entrar al contenedor imprime `MY_DOMAIN_ID: 20`. Con el Agent en marcha y SIN bringup, `ros2 topic list -t` (dominio 20) muestra: `/battery` (UInt16), `/beep` (UInt16), `/cmd_vel` (Twist), `/imu` (Imu), `/odom_raw` (Odometry), `/scan` (LaserScan), `/servo_s1` y `/servo_s2` (Int32). **No hay `/odom`**: `odom_corrector` no está corriendo todavía.
+- `/battery` permite registrar la carga de cada corrida (`grabar_bag.sh` lo graba). Unidad **[VERIFICAR]** (`ros2 topic echo /battery --once`). No publiques en `/beep`, `/servo_s1`, `/servo_s2`.

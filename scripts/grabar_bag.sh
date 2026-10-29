@@ -19,11 +19,14 @@ if [ -z "$TOPIC" ]; then
   fi
 fi
 
+# /battery (std_msgs/UInt16) existe en el RosCar 8: grabarlo deja registrada la carga de cada corrida.
+if timeout 10 ros2 topic list 2>/dev/null | grep -qx "/battery"; then EXTRA="/battery"; else EXTRA=""; fi
+
 mkdir -p "$SALIDA" || exit 1
 NOMBRE="$SALIDA/${PREFIJO}_$(date +%Y%m%d_%H%M%S)"
 if [ -e "$NOMBRE" ]; then echo "ERROR: $NOMBRE ya existe; no se sobrescribe."; exit 3; fi
 
-echo "Grabando: $TOPIC /cmd_vel /tf  ->  $NOMBRE   (si salen /odom_raw y /odom, se graban ambos)"
+echo "Grabando: $TOPIC /cmd_vel /tf $EXTRA  ->  $NOMBRE   (si salen /odom_raw y /odom, se graban ambos)"
 echo "Ctrl+C para terminar. Al acabar, revisa:  ros2 bag info $NOMBRE"
 # shellcheck disable=SC2086  (TOPIC puede ser una lista)
-exec ros2 bag record $TOPIC /cmd_vel /tf -o "$NOMBRE"
+exec ros2 bag record $TOPIC /cmd_vel /tf $EXTRA -o "$NOMBRE"
