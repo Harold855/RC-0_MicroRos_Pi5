@@ -39,5 +39,13 @@ Qué `launch` levanta `odom_corrector` y con qué valores de arranque (YAML real
 
 Hallazgos del código del docente: ver `docs/notas_codigo_docente.md` (`r` y `b_eff` se aplican en `odom_corrector`, no en el firmware; `calibrate_beff` admite giro horario y escribe su propio `calibration_log.csv`).
 
-## Estado
-Hecho solo con datos sintéticos y sin ROS real: ver `README.md`. Aún no se ha tocado el robot.
+## Estado (punto de congelación, 29-oct-2026)
+**Hecho, sin datos reales:** herramientas (`odom_utils`, `plot_odom`, `analizar_bag`, `secuencia_rc0`), scripts de Parte A y de bags, verificación de entrega, tablas del informe, hoja de campo, guía, notas del código del docente. 91 pruebas sintéticas en verde. Nada de eso es evidencia de calibración.
+
+**Hecho en el robot (solo lectura, RosCar 8):** repo copiado a `~/yahboomcar_ws/rc0_rama` (visible en el contenedor `ros2_dev` como `/root/yahboomcar_ws/rc0_rama`); `parteA_host.sh` ejecutado (queda en `setup_log.txt` con un primer intento defectuoso por CRLF); confirmados Agent en contenedor `micro_ros_agent` (serie, dominio **20**), topics `/battery /beep /cmd_vel /imu /odom_raw /scan /servo_s1 /servo_s2` y ausencia de `/odom` (sin bringup). **No se ha movido el robot ni lanzado el bringup.**
+
+**Sin hacer:** `parteA_contenedor.sh` (frecuencias, rosbag2), `rqt_graph`, predicciones (`informe/predicciones.md`, escribirlas y commitear ANTES de medir), todas las pruebas B–E, informe, defensa.
+
+**Retomar por aquí:** 1) en `ros2_dev`: `export ROS_DOMAIN_ID=20; cd /root/yahboomcar_ws/rc0_rama; bash scripts/parteA_contenedor.sh` y pegar la salida; 2) `ros2 pkg prefix capytown_esan` y listar su `share/` para hallar `bringup.launch.py` y el YAML; 3) preguntar al docente: dominio 20 u 8 (E2), cómo se lanza el bringup/`odom_corrector`, definición del error angular, política del botón de reinicio; 4) escribir predicciones; 5) ensayar con `fake_robot` en dominio 77 antes de mover el robot real.
+
+**Rama de trabajo:** `claude/elegant-hawking-2fsfhi`. `main` está desactualizado (falta `docs/`, `informe/`, `CLAUDE.md`, `.gitignore`, `test_entrega.py`, ediciones recientes; conflicto en README y 6 scripts por subida por la web). Renombrar el repo a `capytown_G<n>` y crear el tag `v1.0-rc0` solo al entregar, a petición del grupo.
