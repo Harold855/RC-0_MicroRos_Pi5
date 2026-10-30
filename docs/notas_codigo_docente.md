@@ -77,3 +77,8 @@ docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 - El comentario del YAML trae las reglas de corrección; el grupo debe poder derivarlas del código de `odom_corrector.py`. Cambios en caliente: `ros2 param set /odom_corrector <param> <valor>`; la copia que lee el robot es la de `install/` (¿refleja `src/`? por confirmar).
 - **`/odom_raw` sin mensajes en 10 s** (mientras `/imu` publica a ~24 Hz). Diagnóstico pendiente (`topic echo --once`, `hz` 30 s); el docente indica `~/reset_esp32.sh` / botón RST si no publica.
 - El contenedor no tiene `ping`: usar `python3 -c "import socket; print(socket.gethostbyname('packages.ros.org'))"`.
+
+## `/odom_raw` y red del robot (mediciones del 30-oct-2026)
+- Un mensaje de `/odom_raw` con el robot quieto: `frame_id: odom_frame`, `child_frame_id: base_footprint`, pose ≈ (1.5 mm, 0.2 mm, yaw 6.3°) **acumulada desde el arranque del firmware**, twist 0, **covarianzas no nulas** (0.001 pose, 0.0001 twist). Stamp de julio 2026 (reloj desfasado).
+- `ros2 topic hz /odom_raw` (10 s y 30 s) no mostró ninguna línea mientras `/imu` daba ≈ 24 Hz: frecuencia de `/odom_raw` **sin medir**. Pendiente: contar mensajes con `echo --no-arr` y mirar los stamps.
+- Red del RosCar 8: `eth0` DOWN (sin cable), `wlan0` 10.42.0.1/24 (punto de acceso), sin ruta por defecto; `ros2_dev` en red `host`. **Sin internet**: rosbag2 solo se instala conectando `eth0` a una red con salida (cambio de red: consultar al docente).
