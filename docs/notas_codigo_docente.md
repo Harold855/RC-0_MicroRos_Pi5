@@ -64,3 +64,9 @@ docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 - `ros2_dev` monta `/home/pi/yahboomcar_ws` (host) en `/root/yahboomcar_ws` (contenedor), además de `/dev`, `/dev/shm` y `/tmp/.X11-unix` (la GUI, p. ej. `rqt_graph`, sale por el escritorio remoto). Copiar el repo a esa carpeta del host lo hace visible dentro, sin `docker cp`.
 - Al entrar al contenedor imprime `MY_DOMAIN_ID: 20`. Con el Agent en marcha y SIN bringup, `ros2 topic list -t` (dominio 20) muestra: `/battery` (UInt16), `/beep` (UInt16), `/cmd_vel` (Twist), `/imu` (Imu), `/odom_raw` (Odometry), `/scan` (LaserScan), `/servo_s1` y `/servo_s2` (Int32). **No hay `/odom`**: `odom_corrector` no está corriendo todavía.
 - `/battery` permite registrar la carga de cada corrida (`grabar_bag.sh` lo graba). Unidad **[VERIFICAR]** (`ros2 topic echo /battery --once`). No publiques en `/beep`, `/servo_s1`, `/servo_s2`.
+
+## Parte A en el contenedor (salida real, RosCar 8, reloj de la Pi desfasado)
+- Nodo de la placa: `/YB_Car_Node`. `/odom_raw`: RELIABLE, VOLATILE, 0 suscriptores. `/imu` medida ≈ 24.1–24.3 Hz (no 50). Frecuencia de `/odom_raw`: pendiente de medir (el script la perdía por un traceback; corregido).
+- **rosbag2 NO está instalado en `ros2_dev`** (`ros2 bag` no existe). El robot no tiene internet por `RosCar8`: hace falta salida a internet (p. ej. Ethernet del laboratorio) o una instalación alternativa del docente. **Bloquea la grabación de los 4 bags.**
+- `capytown_esan` instalado en `/root/yahboomcar_ws/install/capytown_esan` (`share/`: `config`, `launch`). Pendiente: leer `launch/bringup.launch.py` y `config/wheel_params.yaml` reales.
+- `/battery` = 73 (unidad por confirmar: ¿0.1 V o %?).

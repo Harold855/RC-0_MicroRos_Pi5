@@ -40,7 +40,9 @@ command -v ros2 >/dev/null 2>&1 || { echo "ros2 no está en el PATH: ¿estás en
   for t in $ODOMS /imu; do
     if echo "$TOPICS" | grep -q "^$t "; then
       echo ">> $t"
-      timeout "$SEG" ros2 topic hz "$t" 2>&1 | tail -n 6
+      # timeout -s INT: al cortar, ros2 imprime un traceback largo; se filtran solo las líneas de frecuencia
+      HZ_OUT="$(timeout -s INT "$SEG" ros2 topic hz "$t" 2>&1 | grep -E 'average rate|min:' | tail -n 4)"
+      if [ -n "$HZ_OUT" ]; then echo "$HZ_OUT"; else echo "(sin mensajes en ${SEG} s)"; fi
     fi
   done
   echo
@@ -51,7 +53,11 @@ command -v ros2 >/dev/null 2>&1 || { echo "ros2 no está en el PATH: ¿estás en
   ros2 pkg list 2>/dev/null | grep -E 'capytown|yahboom' || echo "(ninguno visible con ese nombre)"
   echo
   echo "--- rosbag2 (Anexo A del reto solo si falta; instalar es un cambio operativo: pedir aprobación)"
-  timeout 20 ros2 bag record --list-storage 2>&1 | head -n 12
+  if ros2 pkg list 2>/dev/null | grep -q '^rosbag2'; then
+    timeout 20 ros2 bag record --list-storage 2>&1 | head -n 12
+  else
+    echo "rosbag2 NO instalado (el verbo 'ros2 bag' no existe): hace falta scripts/instalar_rosbag2.sh (requiere internet en el robot y aprobación)"
+  fi
   echo
   echo "--- Aislamiento (E2): la lista de nodos/topics de arriba solo debe mostrar el robot propio."
   echo "--- Pendiente a mano: captura de rqt_graph y referencia a ella en este log."
