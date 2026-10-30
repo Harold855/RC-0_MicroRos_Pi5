@@ -70,3 +70,10 @@ docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 - **rosbag2 NO está instalado en `ros2_dev`** (`ros2 bag` no existe). El robot no tiene internet por `RosCar8`: hace falta salida a internet (p. ej. Ethernet del laboratorio) o una instalación alternativa del docente. **Bloquea la grabación de los 4 bags.**
 - `capytown_esan` instalado en `/root/yahboomcar_ws/install/capytown_esan` (`share/`: `config`, `launch`). Pendiente: leer `launch/bringup.launch.py` y `config/wheel_params.yaml` reales.
 - `/battery` = 73 (unidad por confirmar: ¿0.1 V o %?).
+
+## `bringup.launch.py` y `wheel_params.yaml` reales (leídos en el robot)
+- `bringup.launch.py` lanza **solo** `odom_corrector` (con `config/wheel_params.yaml`, argumento `wheel_params:=<ruta>`). No incluye el Agent (contenedor aparte) ni el bringup de Yahboom (su EKF publicaría otro `/odom`). **No publica `/cmd_vel`: no mueve el robot.** Hay también `launch/sim.launch.py` (simulación).
+- YAML (`/**: ros__parameters`): `wheel_radius 0.0325`, `wheel_separation 0.2400`, `firmware_wheel_radius 0.0325`, `firmware_wheel_separation 0.2400`, `encoder_ticks_per_rev 1320`, `max_linear_vel 0.30`, `max_angular_vel 1.50`, `publish_tf true`. Al arrancar r = r0 y b = b0, así que `/odom` = `/odom_raw`.
+- El comentario del YAML trae las reglas de corrección; el grupo debe poder derivarlas del código de `odom_corrector.py`. Cambios en caliente: `ros2 param set /odom_corrector <param> <valor>`; la copia que lee el robot es la de `install/` (¿refleja `src/`? por confirmar).
+- **`/odom_raw` sin mensajes en 10 s** (mientras `/imu` publica a ~24 Hz). Diagnóstico pendiente (`topic echo --once`, `hz` 30 s); el docente indica `~/reset_esp32.sh` / botón RST si no publica.
+- El contenedor no tiene `ping`: usar `python3 -c "import socket; print(socket.gethostbyname('packages.ros.org'))"`.

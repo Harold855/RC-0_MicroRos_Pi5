@@ -17,7 +17,8 @@ if command -v ros2 >/dev/null 2>&1; then
 fi
 
 [ "$(id -u)" -eq 0 ] || { echo "Ejecútalo como root dentro del contenedor (no uses sudo a ciegas en el host)."; exit 1; }
-ping -c 1 -W 3 packages.ros.org >/dev/null 2>&1 || { echo "Sin internet (no se resuelve packages.ros.org). Conecta el robot a una red con salida o pide ayuda al docente."; exit 2; }
+# ping no existe en el contenedor: se comprueba la resolución de nombres con python3
+python3 -c "import socket; socket.gethostbyname('packages.ros.org')" >/dev/null 2>&1 || { echo "Sin internet (no se resuelve packages.ros.org). Conecta el robot a una red con salida o pide ayuda al docente."; exit 2; }
 
 cat <<'EOF'
 Se va a:
