@@ -6,6 +6,9 @@
 # Seguridad: nada se mueve por defecto. "secuencia ... mover" quita el dry-run, pero la secuencia sigue
 # exigiendo escribir MOVER y la cuenta atrás; solo con el robot a la vista y una persona lista para frenar.
 
+# ROS 2 base (ahí vive rosbag2) y workspace: solo en esta terminal
+[ -f /opt/ros/humble/setup.bash ] && source /opt/ros/humble/setup.bash
+[ -f /root/yahboomcar_ws/install/setup.bash ] && source /root/yahboomcar_ws/install/setup.bash
 RC0_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export ROS_DOMAIN_ID="${RC0_DOMAIN_ID:-${ROS_DOMAIN_ID:-20}}"
 

@@ -101,3 +101,10 @@ docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 - **E2:** dominio 20 → ve el robot; dominio 8 → lista vacía (aislamiento lógico). Valor "correcto" (20 u 8) pendiente del docente.
 - `teleop_key` no tiene tope de velocidad: llegó a 0.23 m/s y 1.14 rad/s con `+`. `secuencia_rc0.py` limita a 0.20 m/s y 1.0 rad/s.
 - Pendiente de la Parte A: captura de `rqt_graph`, rosbag2, dominio y dry-run de `secuencia recta` contra ROS real.
+
+## rosbag2 (30-oct-2026, noche)
+- **rosbag2 ya estaba instalado** en `/opt/ros/humble` (`rosbag2`, `rosbag2_py`, `rosbag2_storage`, `rosbag2_transport`...): lo que faltaba era `source /opt/ros/humble/setup.bash` en esa terminal. Los intentos de `apt` fallaron todos (sin internet); no se instaló nada. `import rosbag2_py` → OK.
+- Almacenamiento disponible: **solo `sqlite3`** (más un plugin de prueba); **no hay `mcap`**. Basta con sqlite3: el reto acepta ambos y `plot_odom.py` lee el formato de `metadata.yaml`.
+- `ros2 bag record --list-storage` (Anexo A del reto) **no existe en esta versión**; los plugins se ven en `ros2 bag record -h` (`-s {my_test_plugin,sqlite3}`).
+- Bag de prueba válido: `Storage id: sqlite3`, 12 s, 134 mensajes de `/odom` (≈ 11.2 Hz) y 134 de `/tf`. `/cmd_vel` no se grabó porque `rosbag2` ignora por defecto los topics sin publicador: `grabar_bag.sh` usa `--include-unpublished-topics`.
+- Se tocaron las fuentes de apt (y se revirtieron; copia en `/root/apt_backup`). Comprobar con `diff` que quedaron igual que el original. El reloj de la Pi ya está en hora.

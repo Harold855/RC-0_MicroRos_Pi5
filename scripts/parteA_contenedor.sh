@@ -8,6 +8,7 @@
 LOG="${1:-setup_log.txt}"
 SEG="${HZ_SEGUNDOS:-10}"   # duración de cada medición de frecuencia
 
+[ -f /opt/ros/humble/setup.bash ] && source /opt/ros/humble/setup.bash
 command -v ros2 >/dev/null 2>&1 || { echo "ros2 no está en el PATH: ¿estás en el contenedor y con el entorno cargado (source /opt/ros/humble/setup.bash)?"; exit 1; }
 
 {
@@ -54,7 +55,7 @@ command -v ros2 >/dev/null 2>&1 || { echo "ros2 no está en el PATH: ¿estás en
   echo
   echo "--- rosbag2 (Anexo A del reto solo si falta; instalar es un cambio operativo: pedir aprobación)"
   if ros2 pkg list 2>/dev/null | grep -q '^rosbag2'; then
-    timeout 20 ros2 bag record --list-storage 2>&1 | head -n 12
+    echo "rosbag2 instalado; almacenamiento disponible: $(ros2 bag record -h 2>&1 | tr '\n' ' ' | grep -o '{my_test_plugin[^}]*}')"
   else
     echo "rosbag2 NO instalado (el verbo 'ros2 bag' no existe): hace falta scripts/instalar_rosbag2.sh (requiere internet en el robot y aprobación)"
   fi

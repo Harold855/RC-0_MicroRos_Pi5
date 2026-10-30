@@ -6,6 +6,10 @@
 # Graba: odometría, /cmd_vel y /tf (como pide el reto). No mueve el robot.
 # Nunca sobrescribe: el nombre lleva fecha y hora, y se rechaza si la carpeta existe.
 
+# cargar el ROS 2 base (ahí vive rosbag2) y el workspace si esta terminal no los tiene
+[ -f /opt/ros/humble/setup.bash ] && source /opt/ros/humble/setup.bash
+[ -f /root/yahboomcar_ws/install/setup.bash ] && source /root/yahboomcar_ws/install/setup.bash
+
 PREFIJO="${1:?Uso: grabar_bag.sh <prefijo> [carpeta_salida]   (p. ej. rc0_recta_c1)}"
 SALIDA="${2:-bags}"
 
@@ -29,4 +33,5 @@ if [ -e "$NOMBRE" ]; then echo "ERROR: $NOMBRE ya existe; no se sobrescribe."; e
 echo "Grabando: $TOPIC /cmd_vel /tf $EXTRA  ->  $NOMBRE   (si salen /odom_raw y /odom, se graban ambos)"
 echo "Ctrl+C para terminar. Al acabar, revisa:  ros2 bag info $NOMBRE"
 # shellcheck disable=SC2086  (TOPIC puede ser una lista)
-exec ros2 bag record $TOPIC /cmd_vel /tf $EXTRA -o "$NOMBRE"
+# --include-unpublished-topics: /cmd_vel se suscribe desde el inicio aunque aún nadie publique
+exec ros2 bag record --include-unpublished-topics $TOPIC /cmd_vel /tf $EXTRA -o "$NOMBRE"

@@ -9,11 +9,13 @@
 # - La instalación vive en este contenedor: si lo recrean (docker rm) hay que repetirla.
 # ESTADO: transcrito del reto, SIN probar en el robot. Léelo antes de ejecutarlo.
 
-if command -v ros2 >/dev/null 2>&1; then
-  LISTA="$(timeout 20 ros2 bag record --list-storage 2>&1)"
-  if echo "$LISTA" | grep -q sqlite3 && echo "$LISTA" | grep -q mcap; then
-    echo "rosbag2 ya está instalado con sqlite3 y mcap. Nada que hacer."; exit 0
-  fi
+# rosbag2 suele estar ya en /opt/ros/humble: solo hace falta cargar el entorno de ROS
+[ -f /opt/ros/humble/setup.bash ] && source /opt/ros/humble/setup.bash
+if command -v ros2 >/dev/null 2>&1 && ros2 bag record -h >/dev/null 2>&1; then
+  PLUGINS="$(ros2 bag record -h 2>&1 | tr '\n' ' ' | grep -o '{my_test_plugin[^}]*}')"
+  echo "rosbag2 YA ESTÁ instalado (almacenamiento: ${PLUGINS:-desconocido}). Con sqlite3 basta para el reto; mcap es opcional."
+  echo "Si otra terminal no ve 'ros2 bag':  source /opt/ros/humble/setup.bash"
+  exit 0
 fi
 
 [ "$(id -u)" -eq 0 ] || { echo "Ejecútalo como root dentro del contenedor (no uses sudo a ciegas en el host)."; exit 1; }
