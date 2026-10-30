@@ -87,3 +87,9 @@ docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 - El puerto RJ45 de la Pi 5 está libre (foto); `eth0` DOWN. Para instalar rosbag2 hay que conectarlo a una toma del laboratorio con DHCP e internet (con permiso del docente).
 - **Riesgo:** Agent en red `host` + dominio 20 (probablemente igual en toda la flota) ⇒ en una LAN compartida DDS puede exponer `/cmd_vel` entre robots. Conectar solo para instalar, robot quieto, y desconectar; comprobar `ros2 node list` antes.
 - Medición de frecuencia por tubería falla por el búfer de Python (`timeout` mata a `ros2 topic echo/hz` antes de vaciarlo): usar `PYTHONUNBUFFERED=1`.
+
+## 30-oct-2026 (tarde): teleop y bringup activos
+- El grupo hizo `colcon build --packages-select capytown_esan --symlink-install` en `/root/yahboomcar_ws` (terminó bien; avisos de setuptools). Con symlink-install, `install/` apunta a `src/`: **editar el YAML de `src/capytown_esan/config` cambia lo que lee el robot al relanzar `odom_corrector`**. Hacer copia previa (`~/yahboomcar_ws/wheel_params.original.yaml`).
+- Nodos: `/YB_Car_Node`, `/odom_corrector`. Topics: `/battery /beep /cmd_vel /imu /odom /odom_raw /odom_reset /parameter_events /rosout /scan /servo_s1 /servo_s2 /tf`.
+- `teleop_key` movió el robot (cadena `/cmd_vel` → motores verificada). Sin mediciones de cinta ni bags.
+- Pendiente: rosbag2 (bloquea la grabación), frecuencias de `/odom` y `/odom_raw`, dry-run de `secuencia_rc0.py` contra ROS real.
