@@ -93,3 +93,11 @@ docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 - Nodos: `/YB_Car_Node`, `/odom_corrector`. Topics: `/battery /beep /cmd_vel /imu /odom /odom_raw /odom_reset /parameter_events /rosout /scan /servo_s1 /servo_s2 /tf`.
 - `teleop_key` movió el robot (cadena `/cmd_vel` → motores verificada). Sin mediciones de cinta ni bags.
 - Pendiente: rosbag2 (bloquea la grabación), frecuencias de `/odom` y `/odom_raw`, dry-run de `secuencia_rc0.py` contra ROS real.
+
+## Evidencia de la Parte A (30-oct-2026, RosCar 8)
+- Nodos: `/YB_Car_Node`, `/odom_corrector` (y `/teleop_key` si hay una terminal con teleop abierta). Todos los topics esperados presentes (`/cmd_vel /imu /odom /odom_raw /scan`, además de `/battery /beep /odom_reset /tf /servo_s1 /servo_s2`).
+- **Frecuencias medidas con `ros2 topic hz`:** `/odom` ≈ 11.0 Hz (min 0.068 s, max 0.149 s), `/odom_raw` ≈ 11.1 Hz, `/imu` ≈ 22.1 Hz. Con 11 Hz hay ~2.6° por muestra a 0.5 rad/s: el frenado de un giro puede pasarse unos grados (relevante para el bonus de 720°, ≤ 5°).
+- **El bringup arranca solo:** `ros2 launch capytown_esan bringup.launch.py` (PID 500, 29 min de vida) lo lanza el contenedor; `odom_corrector` lee `install/capytown_esan/share/capytown_esan/config/wheel_params.yaml`. No relanzarlo (duplicaría el nodo).
+- **E2:** dominio 20 → ve el robot; dominio 8 → lista vacía (aislamiento lógico). Valor "correcto" (20 u 8) pendiente del docente.
+- `teleop_key` no tiene tope de velocidad: llegó a 0.23 m/s y 1.14 rad/s con `+`. `secuencia_rc0.py` limita a 0.20 m/s y 1.0 rad/s.
+- Pendiente de la Parte A: captura de `rqt_graph`, rosbag2, dominio y dry-run de `secuencia recta` contra ROS real.
