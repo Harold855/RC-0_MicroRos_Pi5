@@ -41,7 +41,7 @@ command -v ros2 >/dev/null 2>&1 || { echo "ros2 no está en el PATH: ¿estás en
     if echo "$TOPICS" | grep -q "^$t "; then
       echo ">> $t"
       # timeout -s INT: al cortar, ros2 imprime un traceback largo; se filtran solo las líneas de frecuencia
-      HZ_OUT="$(timeout -s INT "$SEG" ros2 topic hz "$t" 2>&1 | grep -E 'average rate|min:' | tail -n 4)"
+      HZ_OUT="$(PYTHONUNBUFFERED=1 timeout -s INT "$SEG" ros2 topic hz "$t" 2>&1 | grep -E 'average rate|min:' | tail -n 4)"
       if [ -n "$HZ_OUT" ]; then echo "$HZ_OUT"; else echo "(sin mensajes en ${SEG} s)"; fi
     fi
   done

@@ -21,6 +21,10 @@ fi
 python3 -c "import socket; socket.gethostbyname('packages.ros.org')" >/dev/null 2>&1 || { echo "Sin internet (no se resuelve packages.ros.org). Conecta el robot a una red con salida o pide ayuda al docente."; exit 2; }
 
 cat <<'EOF'
+AVISO DE AISLAMIENTO: el Agent usa red "host" y dominio 20. Si el robot está conectado por Ethernet a una LAN
+compartida, DDS puede descubrir robots de otros grupos (y ellos al tuyo, con /cmd_vel). Conecta el cable SOLO
+para instalar, con el robot quieto, y desconéctalo al terminar. Si "ros2 node list" muestra nodos ajenos, para.
+
 Se va a:
   1. apt-key del F42ED6FBAB17C654        (clave GPG vencida; si dice "No such key", sigue)
   2. apt-get update; apt-get install -y curl

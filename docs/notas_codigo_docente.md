@@ -82,3 +82,8 @@ docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 - Un mensaje de `/odom_raw` con el robot quieto: `frame_id: odom_frame`, `child_frame_id: base_footprint`, pose ≈ (1.5 mm, 0.2 mm, yaw 6.3°) **acumulada desde el arranque del firmware**, twist 0, **covarianzas no nulas** (0.001 pose, 0.0001 twist). Stamp de julio 2026 (reloj desfasado).
 - `ros2 topic hz /odom_raw` (10 s y 30 s) no mostró ninguna línea mientras `/imu` daba ≈ 24 Hz: frecuencia de `/odom_raw` **sin medir**. Pendiente: contar mensajes con `echo --no-arr` y mirar los stamps.
 - Red del RosCar 8: `eth0` DOWN (sin cable), `wlan0` 10.42.0.1/24 (punto de acceso), sin ruta por defecto; `ros2_dev` en red `host`. **Sin internet**: rosbag2 solo se instala conectando `eth0` a una red con salida (cambio de red: consultar al docente).
+
+## Instalar rosbag2 y aislamiento (30-oct-2026)
+- El puerto RJ45 de la Pi 5 está libre (foto); `eth0` DOWN. Para instalar rosbag2 hay que conectarlo a una toma del laboratorio con DHCP e internet (con permiso del docente).
+- **Riesgo:** Agent en red `host` + dominio 20 (probablemente igual en toda la flota) ⇒ en una LAN compartida DDS puede exponer `/cmd_vel` entre robots. Conectar solo para instalar, robot quieto, y desconectar; comprobar `ros2 node list` antes.
+- Medición de frecuencia por tubería falla por el búfer de Python (`timeout` mata a `ros2 topic echo/hz` antes de vaciarlo): usar `PYTHONUNBUFFERED=1`.
