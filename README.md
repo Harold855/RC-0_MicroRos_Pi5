@@ -50,4 +50,4 @@ source config/entorno_rc0.sh && bash scripts/parteA_contenedor.sh
 ```
 
 ## Para el laboratorio
-`docs/guia_trabajo_roscar.md` (conexión y copias de seguridad) · `docs/hoja_de_campo_rc0.md` (qué anotar en cada parte) · `informe/predicciones.md` (escribir y commitear **antes** de medir).
+`config/atajos_rc0.sh` (comandos cortos: `source` una vez y escribe `ayuda`) · `docs/guia_trabajo_roscar.md` (conexión y copias de seguridad) · `docs/hoja_de_campo_rc0.md` (qué anotar en cada parte) · `informe/predicciones.md` (escribir y commitear **antes** de medir).
