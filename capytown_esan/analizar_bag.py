@@ -215,8 +215,11 @@ def main(argv: Optional[List[str]] = None) -> int:
 
         topic, t, poses, vel = plot_odom.leer_odometria(a.bag.rstrip("/\\"), a.topic)
         if a.listar:
-            for k, (i0, i1) in enumerate(listar_tramos(t, vel, a.prueba, a.umbral), 1):
+            tramos = listar_tramos(t, vel, a.prueba, a.umbral)
+            for k, (i0, i1) in enumerate(tramos, 1):
                 print(f"tramo {k}: t = {t[i0]:.2f}–{t[i1]:.2f} s ({t[i1]-t[i0]:.2f} s)")
+            if not tramos:
+                print(f"ningún tramo de movimiento de tipo '{a.prueba}' en el bag (¿el robot estaba quieto o el umbral es alto?)")
             return 0
         r = analizar(t, poses, vel, a.prueba, a.segmento, a.umbral)
         print(f"bag: {a.bag} · topic: {topic} · tramo {r['segmento']}/{r['tramos_en_el_bag']} "
