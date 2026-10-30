@@ -108,3 +108,8 @@ docker inspect ros2_dev --format '{{.Config.Env}} {{.Mounts}}'
 - `ros2 bag record --list-storage` (Anexo A del reto) **no existe en esta versión**; los plugins se ven en `ros2 bag record -h` (`-s {my_test_plugin,sqlite3}`).
 - Bag de prueba válido: `Storage id: sqlite3`, 12 s, 134 mensajes de `/odom` (≈ 11.2 Hz) y 134 de `/tf`. `/cmd_vel` no se grabó porque `rosbag2` ignora por defecto los topics sin publicador: `grabar_bag.sh` usa `--include-unpublished-topics`.
 - Se tocaron las fuentes de apt (y se revirtieron; copia en `/root/apt_backup`). Comprobar con `diff` que quedaron igual que el original. El reloj de la Pi ya está en hora.
+
+## Tubería verificada con ROS 2 real (30-oct-2026, 23:10, robot quieto)
+- `bash scripts/grabar_bag.sh prueba_pipeline /tmp/pruebas` → bag `sqlite3` de 28.8 s: `/odom` 320, `/odom_raw` 321, `/tf` 320, `/battery` 28 (≈ 1 Hz), `/cmd_vel` 0 (suscrito desde el inicio).
+- `plot_odom.py` leyó el bag con `rosbag2_py`, eligió `/odom` solo (preferencia sobre `/odom_raw`) y generó los dos PNG; `matplotlib` existe en el contenedor.
+- Con el robot quieto `/odom` da desplazamiento 0 y θ 0° (arranca en cero), mientras `/odom_raw` conserva el acumulado del firmware. **Sin verificar aún:** gráficas con movimiento real, `analizar_bag.py` y `secuencia_rc0.py` contra ROS real.
