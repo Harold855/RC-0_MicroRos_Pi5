@@ -1,23 +1,41 @@
-# Predicciones (escribir ANTES de encender el robot y de medir)
+# RC-0 — Predicciones previas a las pruebas
 
-> **Reglas.** Las escribe el grupo, con sus propias palabras. Se hace `git commit` de este archivo
-> **antes de la primera medición**: la fecha del commit demuestra que son anteriores. Después **no se edita**
-> (si te equivocas, añade una nota debajo, no borres la original). La diferencia con el dato real es parte de la nota.
-> Estas preguntas son las del reto; cada respuesta debe justificarse.
+**Proyecto:** CapyTown — Primer arranque y calibración del robot  
+**Equipo:** 8
+**Sección:** [S-003]  
+**Fecha de registro:** [30/10/2026 18:18:50]
 
-Fecha y hora: ______________________ · Autor(es): ______________________
+> **Importante:** Estas son nuestras predicciones, no las mediciones reales. Donde, se registran antes de iniciar las pruebas y no se modifican después de conocer los resultados.
 
-## 1. Si se publica `linear.x = 0.10 m/s` durante 10 s, ¿cuánto avanzará el robot según la cinta y cuánto según la odometría? (dos números en cm)
+## 1. Movimiento recto a 0.10 m/s durante 10 s
 
-- Según la cinta: ______ cm
-- Según la odometría: ______ cm
-- Justificación:
+**Pregunta:** Si publicamos `linear.x = 0.10 m/s` durante `10 s`, ¿cuánto llegará a avanzar el robot y cuánto según `/odom`?
 
-## 2. Si `b_eff` es igual al ancho físico W entre ruedas y se pide un giro de 360° medido por odometría, ¿el robot girará más o menos de 360°? Justifiquen.
+**Predecimos:**
+- **Distancia real (cinta métrica): 98 cm.**
+- **Distancia estimada por `/odom`: 100 cm.**
 
-- Respuesta:
-- Justificación:
+**Motivo:** El desplazamiento teórico es `d = v × t = 0.10 m/s × 10 s = 1.00 m = 100 cm`. Sin embargo, estimamos que el avance físico puede ser ligeramente menor debido al deslizamiento de las ruedas, la respuesta de los motores o el inicio y la detención del movimiento. Entonces, suponemos que, antes de calibrar, la odometría podría indicar aproximadamente el desplazamiento nominal de 100 cm. Son valores estimados: los datos reales se verificarán con la cinta y el registro de `/odom`.
 
-## 3. ¿Qué observarían si dos grupos usan el mismo `ROS_DOMAIN_ID`? (distingue aislamiento lógico DDS de aislamiento físico entre redes Wi-Fi)
+## 2. Giro de 360° usando `b_eff = W`
 
-- Respuesta:
+**Pregunta:** Si configuramos el ancho de vía efectivo (`b_eff`) igual al ancho físico entre ruedas (`W`) y solicitamos un giro de 360° según la odometría, ¿el robot tendrá un giroo más o menos de 360°?
+
+**Predicimos:** **Giró físicamente de menos de 360°**.
+
+**Motivo:** Al tratarse de un robot de cuatro ruedas sin dirección, los giros pueden producir deslizamiento lateral. Esperamos que el ancho de vía efectivo real sea mayor que la separación física `W`. Si se usa `b_eff = W`, la odometría podría sobreestimar el ángulo de giro; por ello, cuando `/odom` marque 360°, el giro físico todavía podría ser inferior a una vuelta completa. Esta hipótesis se comprobará midiendo el giro real y ajustando `b_eff`.
+
+## 3. Dos grupos con el mismo `ROS_DOMAIN_ID`
+
+**Pregunta:** ¿Qué observaríamos si dos grupos utilizan el mismo `ROS_DOMAIN_ID`?
+
+**Predecimos:** **Podrían aparecer nodos y tópicos de ambos robots y producirse interferencias en la comunicación.**
+
+**Motivo:** Si los dos equipos están en la misma red ROS 2, comparten dominio y no tienen otro aislamiento, sus nodos pueden descubrirse mutuamente. Si publican y escuchan los mismos nombres de tópicos, como `/cmd_vel` y `/odom`, podrían mezclarse los datos e incluso recibirse comandos dirigidos al otro robot. Por eso, cada grupo debe usar el dominio asignado y configurarlo de manera consistente en la Raspberry Pi 5 y en la placa.
+
+---
+
+## Verificación posterior (se registran por separado)
+
+Los resultados obtenidos durante las pruebas y la explicación de las diferencias entre predicción y medición se documentarán en `informe.pdf` y en los archivos `linea_recta.csv`, `calibration_log.csv` y `validacion.csv`. **No se modificarán las predicciones originales de este archivo.**
+

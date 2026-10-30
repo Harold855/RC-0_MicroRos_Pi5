@@ -1,0 +1,185 @@
+# ======================================================================
+# NOTA DE ARCHIVO (añadida al guardar este archivo en el repositorio; TODO lo que sigue es la salida original, sin editar)
+# - Fecha real de las pruebas: 30/10/2026. Los dos primeros bloques muestran fechas de julio de 2026 porque el reloj de la Pi
+#   estaba desfasado en ese momento; luego se corrigió.
+# - Bloque "Parte A ROS 2" (primera ejecución): la frecuencia de /odom_raw aparece como un traceback porque el script de entonces
+#   recortaba la salida; la frecuencia real de /odom_raw (~11.1 Hz) está medida en el bloque "PARTE A / E1". El aviso de
+#   "--list-storage" ocurrió porque esa terminal no tenía cargado /opt/ros/humble (rosbag2 sí estaba instalado; ver el último bloque).
+# - Dominio ROS usado por el robot: 20 (Agent del laboratorio). Dominio 8: lista de nodos vacía (aislamiento lógico).
+# - Pendiente: captura de rqt_graph (referencia a añadir cuando se tome).
+# ======================================================================
+==============================================================
+RC-0 · Parte A · HOST · 2026-07-16 04:46:57 BST
+==============================================================
+--- [PI HOST] identidad
+usuario: pi   host: roscar8
+Linux roscar8 6.6.31+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.6.31-1+rpt1 (2024-05-29) aarch64 GNU/Linux
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+
+--- [PI HOST] contenedores Docker (docker ps -a)
+NAMES             IMAGE                                STATUS
+micro_ros_agent   microros/micro-ros-agent:humble      Up About an hour
+ros2_dev          yahboomtechnology/ros-humble:4.1.2   Up About an hour
+
+--- [PI HOST] ¿hay un micro-ROS Agent en marcha? (no lances otro: no dupliques el Agent)
+root        1912  0.0  0.6  49328 28672 ?        Ss   03:38   0:00 /usr/bin/python3 /opt/ros/humble/bin/ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 -b 921600 -v4
+root        2009  1.1  0.4 1124192 16896 ?       Sl   03:38   0:46 /uros_ws/install/micro_ros_agent/lib/micro_ros_agent/micro_ros_agent serial --dev /dev/ttyUSB0 -b 921600 -v4
+
+--- [PI HOST] scripts del fabricante (solo existencia)
+ls: cannot access '/home/pi/start_agent.sh': No such file or directory
+ls: cannot access '/home/pi/setup_workspace.sh': No such file or directory
+-rwxrwxrwx 1 pi pi 417 Jul  2 14:13 /home/pi/ros2_humble.sh
+-rwxrwxrwx 1 pi pi 888 Jul 15 01:23 /home/pi/start_agent_rpi5.sh
+
+--- [PI HOST] temperatura y subtensión de la Pi (no es la batería del RosCar; esa se anota a mano)
+temp=47.7'C
+throttled=0x0
+
+--- Pendientes de observar a mano: ID del RosCar físico, estado de la batería, captura de rqt_graph.
+==============================================================
+RC-0 · Parte A · ROS 2 · 2026-07-16 07:50:02 UTC
+==============================================================
+--- [DOCKER ROS 2] entorno
+ROS_DISTRO=humble   ROS_DOMAIN_ID=20   host=raspberrypi
+
+--- ros2 node list
+/YB_Car_Node
+
+--- ros2 topic list -t
+/battery [std_msgs/msg/UInt16]
+/beep [std_msgs/msg/UInt16]
+/cmd_vel [geometry_msgs/msg/Twist]
+/imu [sensor_msgs/msg/Imu]
+/odom_raw [nav_msgs/msg/Odometry]
+/parameter_events [rcl_interfaces/msg/ParameterEvent]
+/rosout [rcl_interfaces/msg/Log]
+/scan [sensor_msgs/msg/LaserScan]
+/servo_s1 [std_msgs/msg/Int32]
+/servo_s2 [std_msgs/msg/Int32]
+
+--- topics esperados (E1: /cmd_vel, odometría, /imu, /scan)
+OK      /cmd_vel
+OK      /imu
+OK      /scan
+Odometría detectada: /odom_raw 
+
+--- frecuencias (10 s cada una; salida de 'ros2 topic hz')
+>> /odom_raw
+    handler, entity, node = self.wait_for_ready_callbacks(timeout_sec=timeout_sec)
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 711, in wait_for_ready_callbacks
+    return next(self._cb_iter)
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 612, in _wait_for_ready_callbacks
+    raise ExternalShutdownException()
+rclpy.executors.ExternalShutdownException
+>> /imu
+	min: 0.008s max: 0.078s std dev: 0.02584s window: 152
+average rate: 24.298
+	min: 0.007s max: 0.078s std dev: 0.02558s window: 177
+average rate: 24.111
+	min: 0.007s max: 0.078s std dev: 0.02576s window: 201
+failed to initialize wait set: the given context is not valid, either rcl_init() was not called or rcl_shutdown() was called., at ./src/rcl/wait.c:130
+
+--- tipos y QoS de la odometría (solo lectura)
+Type: nav_msgs/msg/Odometry
+
+Publisher count: 1
+
+Node name: YB_Car_Node
+Node namespace: /
+Topic type: nav_msgs/msg/Odometry
+Endpoint type: PUBLISHER
+GID: 01.0f.ef.6f.10.00.7d.55.00.00.00.00.00.00.01.03.00.00.00.00.00.00.00.00
+QoS profile:
+  Reliability: RELIABLE
+  History (Depth): UNKNOWN
+  Durability: VOLATILE
+  Lifespan: Infinite
+  Deadline: Infinite
+  Liveliness: AUTOMATIC
+  Liveliness lease duration: Infinite
+
+Subscription count: 0
+
+
+--- paquetes relevantes
+capytown_esan
+yahboom_app_save_map
+yahboom_web_savmap_interfaces
+yahboomcar_astra
+yahboomcar_base_node
+yahboomcar_bringup
+yahboomcar_ctrl
+yahboomcar_description
+yahboomcar_laser
+yahboomcar_mediapipe
+yahboomcar_msgs
+yahboomcar_multi
+yahboomcar_nav
+yahboomcar_visual
+
+--- rosbag2 (Anexo A del reto solo si falta; instalar es un cambio operativo: pedir aprobación)
+usage: ros2 [-h] [--use-python-default-buffering]
+            Call `ros2 <command> -h` for more detailed usage. ...
+ros2: error: unrecognized arguments: --list-storage
+
+--- Aislamiento (E2): la lista de nodos/topics de arriba solo debe mostrar el robot propio.
+--- Pendiente a mano: captura de rqt_graph y referencia a ella en este log.
+=== PARTE A / E1 - fecha real: 30/10/2026 hh:mm (el reloj de la Pi esta desfasado)
+--- nodos
+/YB_Car_Node
+/odom_corrector
+/teleop_key
+--- topics
+/battery [std_msgs/msg/UInt16]
+/beep [std_msgs/msg/UInt16]
+/cmd_vel [geometry_msgs/msg/Twist]
+/imu [sensor_msgs/msg/Imu]
+/odom [nav_msgs/msg/Odometry]
+/odom_raw [nav_msgs/msg/Odometry]
+/odom_reset [std_msgs/msg/Empty]
+/parameter_events [rcl_interfaces/msg/ParameterEvent]
+/rosout [rcl_interfaces/msg/Log]
+/scan [sensor_msgs/msg/LaserScan]
+/servo_s1 [std_msgs/msg/Int32]
+/servo_s2 [std_msgs/msg/Int32]
+/tf [tf2_msgs/msg/TFMessage]
+--- frecuencia /odom
+average rate: 11.087
+	min: 0.068s max: 0.149s std dev: 0.01981s window: 61
+average rate: 11.030
+	min: 0.068s max: 0.149s std dev: 0.01974s window: 73
+--- frecuencia /odom_raw
+average rate: 11.104
+	min: 0.071s max: 0.145s std dev: 0.01967s window: 73
+average rate: 11.057
+	min: 0.071s max: 0.145s std dev: 0.02005s window: 85
+--- frecuencia /imu
+average rate: 22.155
+	min: 0.008s max: 0.079s std dev: 0.02624s window: 163
+average rate: 22.046
+	min: 0.008s max: 0.079s std dev: 0.02608s window: 185
+--- proceso del bringup
+    500       28:53 /usr/bin/python3 /opt/ros/humble/bin/ros2 launch capytown_esan bringup.launch.py
+    501       28:53 /usr/bin/python3 /root/yahboomcar_ws/install/capytown_esan/lib/capytown_esan/odom_corrector --ros-args -r __node:=odom_corrector --params-file /root/yahboomcar_ws/install/capytown_esan/share/capytown_esan/config/wheel_params.yaml
+=== E2 - dominio
+ROS_DOMAIN_ID en este contenedor: 20
+--- dominio 20 (el del robot)
+/YB_Car_Node
+/odom_corrector
+/teleop_key
+--- dominio 8 (otro dominio, debe estar vacio)
+=== rosbag2 disponible (prueba de grabacion, NO es evidencia de calibracion)
+
+Files:             prueba_pipeline_20261030_231009_0.db3
+Bag size:          594.5 KiB
+Storage id:        sqlite3
+Duration:          28.802s
+Start:             Oct 30 2026 23:10:09.694 (1793401809.694)
+End:               Oct 30 2026 23:10:38.496 (1793401838.496)
+Messages:          989
+Topic information: Topic: /tf | Type: tf2_msgs/msg/TFMessage | Count: 320 | Serialization Format: cdr
+                   Topic: /odom | Type: nav_msgs/msg/Odometry | Count: 320 | Serialization Format: cdr
+                   Topic: /battery | Type: std_msgs/msg/UInt16 | Count: 28 | Serialization Format: cdr
+                   Topic: /cmd_vel | Type: geometry_msgs/msg/Twist | Count: 0 | Serialization Format: cdr
+                   Topic: /odom_raw | Type: nav_msgs/msg/Odometry | Count: 321 | Serialization Format: cdr
+
