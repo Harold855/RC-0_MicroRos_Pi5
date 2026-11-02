@@ -122,7 +122,7 @@ def test_reinicio_dentro_del_tramo_se_avisa():
 # ---------------------------------------------------------------- CSV
 def args(**kw):
     base = dict(corrida=None, r=None, d_real=None, desvio_m=None, desvio_de_odom=False, variante=None,
-                valor_real=None, iteracion=None, b_eff_usado=None, theta_medido=None, b_eff_propuesto=None,
+                valor_real=None, objetivo_deg=None, iteracion=None, b_eff_usado=None, theta_medido=None, b_eff_propuesto=None,
                 denominador="reportado")
     base.update(kw)
     return argparse.Namespace(**base)
@@ -160,7 +160,9 @@ def test_fila_calibracion_no_calcula_b_eff_propuesto():
     with pytest.raises(ValueError, match="--b-eff-propuesto"):
         ab.construir_fila("calibracion", r, args(iteracion=1, b_eff_usado=0.2, theta_medido=348.5))
     fila = ab.construir_fila("calibracion", r, args(iteracion=1, b_eff_usado=0.2, theta_medido=348.5, b_eff_propuesto=0.25))
-    assert fila[-1] == "0.2500"  # el valor tecleado por el grupo, sin tocar
+    assert len(fila) == len(ab.ENCABEZADOS["calibracion"]) == 7
+    assert fila[5] == "0.2500"  # b_eff_despues: el valor tecleado por el grupo, sin tocar
+    assert fila[3] == "360" and fila[4] == "348.5" and fila[6] == "3.19"  # error sobre el objetivo, como calibrate_beff.py
 
 
 def test_anexar_crea_encabezado_en_archivo_con_solo_salto_de_linea(tmp_path):
@@ -183,3 +185,56 @@ def test_anexar_rechaza_encabezado_distinto_sin_tocar_el_archivo(tmp_path):
     with pytest.raises(ValueError, match="encabezado"):
         ab.anexar_fila(str(f), "validacion", ["A2", "recta", "1", "1", "0"])
     assert f.read_text() == "otra,cosa\n1,2\n"
+
+
+# ---------------------------------------------------------------- validación de lo que se teclea
+def _ns(**kw):
+    base = dict(prueba="recta", d_real=None, valor_real=None, desvio_m=None, theta_medido=None, r=None, b_eff_usado=None,
+                b_eff_propuesto=None, corrida=None, iteracion=None, variante=None)
+    base.update(kw)
+    return argparse.Namespace(**base)
+
+
+@pytest.mark.parametrize("kw,texto", [
+    (dict(d_real=98.0), "CENTÍMETROS"),
+    (dict(d_real=0.001), "fuera del rango"),
+    (dict(desvio_m=1.2), "cm o mm"),
+    (dict(r=3.25), "METROS"),
+    (dict(r=32.5), "METROS"),
+    (dict(b_eff_usado=24.0), "METROS"),
+    (dict(theta_medido=2.0), "radianes"),
+    (dict(prueba="giro", valor_real=5.0), "radianes"),
+    (dict(corrida=0), "entero"),
+    (dict(variante="A3"), "A1 o A2"),
+])
+def test_validar_entradas_detecta_errores_de_captura(kw, texto):
+    with pytest.raises(ValueError, match=texto):
+        ab.validar_entradas(_ns(**kw))
+
+
+def test_validar_entradas_acepta_valores_normales():
+    ab.validar_entradas(_ns(d_real=0.985, desvio_m=0.012, r=0.0325, corrida=3, variante="A2"))
+    ab.validar_entradas(_ns(prueba="giro", valor_real=355.5, theta_medido=720.0, b_eff_usado=0.24, b_eff_propuesto=0.2512))
+
+
+def test_linea_recta_rechaza_corrida_duplicada_con_el_mismo_r(tmp_path):
+    f = tmp_path / "linea_recta.csv"
+    fila = ["1", "0.0325", "1.0", "0.95", "5.0", "0.01"]
+    ab.anexar_fila(str(f), "linea_recta", fila)
+    with pytest.raises(ValueError, match="ya existe"):
+        ab.anexar_fila(str(f), "linea_recta", fila)
+    ab.anexar_fila(str(f), "linea_recta", ["1", "0.0331"] + fila[2:])      # mismo n, r distinto: es otra iteración
+    ab.anexar_fila(str(f), "linea_recta", fila, permitir_duplicado=True)    # explícito
+    assert len(f.read_text().splitlines()) == 4
+
+
+def test_main_da_mensaje_especifico_si_el_bag_no_existe(capsys, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    rc = ab.main([str(tmp_path / "no_existe"), "--prueba", "recta", "--listar"])
+    err = capsys.readouterr().err
+    assert rc == 2 and "no existe la carpeta del bag" in err and "raíz del repositorio" in err
+
+
+def test_main_valida_antes_de_abrir_el_bag(capsys):
+    rc = ab.main(["cualquiera", "--prueba", "recta", "--d-real", "98"])
+    assert rc == 2 and "CENTÍMETROS" in capsys.readouterr().err

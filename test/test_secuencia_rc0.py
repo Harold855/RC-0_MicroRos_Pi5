@@ -127,3 +127,32 @@ def test_giro_por_tiempo_termina_a_target_sobre_omega():
     p = plan(modo="giro", parada_por="tiempo")
     assert sq.motivo_de_fin(p, p["duracion_esperada_s"] - 0.1, acum(), None, 1.0) is None
     assert sq.motivo_de_fin(p, p["duracion_esperada_s"], acum(), None, 1.0).startswith("completado")
+
+
+# ---------------------------------------------------------------- diagnóstico previo al movimiento
+def niveles(res):
+    return [n for n, _ in res]
+
+
+def test_evaluar_entorno_sano():
+    assert niveles(sq.evaluar_entorno(0, 1, 2, 1)) == ["OK", "OK"]
+
+
+def test_evaluar_entorno_otro_publicador_bloquea():
+    res = sq.evaluar_entorno(1, 1, 2, 1)
+    assert res[0][0] == "FALLA" and "teleop_key" in res[0][1]
+
+
+def test_evaluar_entorno_nadie_escucha_cmd_vel_bloquea():
+    res = sq.evaluar_entorno(0, 0, 2, 1)
+    assert any(n == "FALLA" and "nadie escucha /cmd_vel" in m for n, m in res)
+
+
+def test_evaluar_entorno_sin_bag_avisa_pero_no_bloquea():
+    res = sq.evaluar_entorno(0, 1, 1, 1)
+    assert [n for n, _ in res] == ["OK", "AVISO"] and "grabar_bag" in res[1][1]
+
+
+def test_evaluar_entorno_con_odom_raw_el_corrector_cuenta_como_suscriptor():
+    assert niveles(sq.evaluar_entorno(0, 1, 2, 2))[-1] == "AVISO"   # 2 = este nodo + odom_corrector: aún sin bag
+    assert niveles(sq.evaluar_entorno(0, 1, 3, 2))[-1] == "OK"
