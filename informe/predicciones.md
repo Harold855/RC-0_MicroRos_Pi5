@@ -5,7 +5,7 @@
 **Sección:** [S-003]  
 **Fecha de registro:** [30/10/2026]
 
-> **Importante:** Estas son nuestras predicciones, no las mediciones reales. Donde, se registran antes de iniciar las pruebas y no se modifican después de conocer los resultados.
+> **Importante:** Son solo nuestras predicciones, no las mediciones reales. Donde, se registran antes de iniciar las pruebas y no se modifican después de conocer los resultados.
 
 ## 1. Movimiento recto a 0.10 m/s durante 10 s
 
