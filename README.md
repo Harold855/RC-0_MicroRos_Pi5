@@ -1,4 +1,4 @@
-# RC-0 · Primer arranque y calibración del RosCar 8
+# RC-0: Primer arranque y calibración del RosCar 8
 
 Desarrollo del reto 0 del Proyecto CapyTown con el robot **MicroROS-Pi5(ROScar)** (Raspberry Pi 5 con una placa ESP32-S3, ROS 2 Humble y micro-ROS).
 Nuestro grupo pone en ejecución al robot, verifica la cadena **placa → micro-ROS → ROS 2**, y calibra los dos parámetros del modelo cinemático
