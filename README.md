@@ -159,7 +159,7 @@ dominio igual en la Pi y la placa, aislamiento (solo se ve el robot propio), ros
 
 ### Parte C — Giro en sitio: calibración de `b_eff`
 **Qué se hace.** Sobre la cartulina celeste (tile B2 de A1), con `r` fijo, el robot gira en sitio en sentido antihorario hasta que `/odom` acumule 360° (`calibrate_beff`, `angular_vel = 0.5 rad/s`). Se mide con cinta el ángulo físico real y el programa calcula el `b_eff` propuesto; se aplica y se repite hasta que el error sea menor del 1 %.
-El error angular es `|medido − objetivo| / objetivo`.
+El error angular es `|medido − objetivo| / objetivo`
 
 **Método.** Una cruz de cinta en el centro del tile marca la posición y la orientación inicial; una línea de cinta en el chasis se alinea con ella. Después del giro se mide cuánto falta o sobra de la vuelta con la separación entre la línea del chasis y la del piso en dos distancias al centro (25 y 75 cm): `δ = arctan(Δseparación / 50 cm)`. El ángulo total es 360° ± δ según si el robot se pasó o se quedó corto. Se corrige solo `b_eff` (`aplicar wheel_separation`), nunca el objetivo ni el tiempo: lo que se calibra es la relación entre lo que dice `/odom` y lo que gira el robot.
 
