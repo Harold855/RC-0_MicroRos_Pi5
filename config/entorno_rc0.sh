@@ -1,16 +1,11 @@
 # Entorno RC-0 para la terminal ROS 2 (contenedor ros2_dev del RosCar o laptop con ROS 2).
 # Uso:  source config/entorno_rc0.sh            # fija ROS_DOMAIN_ID=8 (dominio del Grupo 8)
 # Solo exporta variables en ESTA terminal: no edita .bashrc, ni el Agent, ni el firmware.
-#
-# DOMINIO DEL RETO: 8 (equipo n -> n; Grupo 8). Según el docente, el 20 de sus códigos era solo un EJEMPLO
-# (los mismos archivos se entregaron a todos los grupos y cada uno usa el suyo); se cambia el valor del dominio,
-# no los algoritmos.
+# DOMINIO DEL RETO: 8 (equipo n -> n; Grupo 8)
 # PROCEDENCIA: los valores iniciales de la Parte A (setup_log.txt: topics, frecuencias, docker inspect) se
 #   obtuvieron con ROS_DOMAIN_ID=20, que era el del Agent del RosCar 8 tal como se recibió.
-# OJO: este archivo solo fija el dominio de ESTA terminal. Mientras el Agent/la placa del robot sigan en 20,
+# NOTA: este archivo solo fija el dominio de esta terminal. Mientras el Agent/la placa del robot sigan en 20,
 #   en el dominio 8 no se verá ningún topic del robot (scripts/preflight.sh lo detecta y lo explica).
-#   Cambiar el dominio del Agent es una acción sobre el robot (docker/firmware) que hace una persona
-#   del grupo con autorización del docente; este repo no la hace.
 # Ensayos aislados con fake_robot: RC0_ENSAYO=1 RC0_DOMAIN_ID=77 source config/entorno_rc0.sh
 DOMINIO_RETO=8
 if [ "${RC0_ENSAYO:-0}" = "1" ] && [ -n "${RC0_DOMAIN_ID:-}" ]; then
