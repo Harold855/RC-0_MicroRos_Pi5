@@ -1,6 +1,6 @@
 # RC-0 - Primer arranque y calibración del robot
 
-**Grupo 8 · S-003** | Integrantes: H.L.P.E, R.S.E.R, J.D.R.N | Calibración: A1 «Torre» | Validación: A2 «Escalón» | ROS_DOMAIN_ID=8
+**Grupo 8 · S-003** | Integrantes: Harold Payco, Sebastián Escobar, Jorge Rivera | Calibración: A1 «Torre» | Validación: A2 «Escalón» | ROS_DOMAIN_ID=8
 
 ## Predicción inicial
 
