@@ -3,7 +3,7 @@
 **Proyecto:** CapyTown — Primer arranque y calibración del robot  
 **Equipo:** 8
 **Sección:** [S-003]  
-**Fecha de registro:** [30/10/2026 18:18:50]
+**Fecha de registro:** [30/10/2026]
 
 > **Importante:** Estas son nuestras predicciones, no las mediciones reales. Donde, se registran antes de iniciar las pruebas y no se modifican después de conocer los resultados.
 
