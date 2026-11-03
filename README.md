@@ -4,8 +4,7 @@ Desarrollo del reto 0 del Proyecto CapyTown con el robot **MicroROS-Pi5(ROScar)*
 Nuestro grupo pone en ejecución al robot, verifica la cadena **placa → micro-ROS → ROS 2**, y calibra los dos parámetros del modelo cinemático
 que se usarán en los retos posteriores: el radio de rueda **r** y el ancho de vía efectivo **b_eff**.
 
-## Equipo y trabajo realizado
-
+## Equipo 
 | Integrante | Trabajo realizado |
 |---|---|
 | *(nombre completo)* | parte A |
