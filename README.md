@@ -5,11 +5,11 @@ Nuestro grupo pone en ejecución al robot, verifica la cadena **placa → micro-
 que se usarán en los retos posteriores: el radio de rueda **r** y el ancho de vía efectivo **b_eff**.
 
 ## Equipo 
-| Integrante | Trabajo realizado |
-|---|---|
-| Jorge Rivera | parte A |
-| Harold Payco | parte B |
-| Sebastián Escobar | parte C |
+| Integrante | Parte realizado | Rol Asignado |
+|---|---|---|
+| Jorge Rivera | parte A | Control |
+| Harold Payco | parte B | Integración y planificacion |
+| Sebastián Escobar | parte C | Percepcion |
 
 ## Datos 
 
