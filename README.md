@@ -6,8 +6,8 @@ que se usarán en los retos posteriores: el radio de rueda **r** y el ancho de v
 
 ## Equipo y trabajo realizado
 
-| Integrante | Rol en RC-0 | Trabajo realizado |
-|---|---|---|
+| Integrante | Trabajo realizado |
+|---|---|
 | *(nombre completo)* | parte A |
 | *(nombre completo)* | parte B y E |
 | *(nombre completo)* | parte C |
