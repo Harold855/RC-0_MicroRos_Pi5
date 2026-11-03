@@ -1,11 +1,19 @@
-# Parámetros efectivos del RosCar 8 para RC-0 — PLANTILLA del repositorio.
-# Aquí se anotan los valores FINALES aceptados. El archivo que consume el robot está en el robot (paquete
-# capytown_esan, nodo odom_corrector) y es el que hay que editar allí; este solo guarda lo que adoptaron.
+# Parámetros del modelo cinemático del RosCar 8 (los lee odom_corrector). Unidades: metros.
+# Mismo formato que el wheel_params.yaml del paquete capytown_esan del docente (/**: ros__parameters:), de modo que
+# puede pasarse al bringup:  ros2 launch capytown_esan bringup.launch.py wheel_params:=<este archivo>
 #
-# Claves según odom_corrector.py (docente): wheel_radius y wheel_separation (b_eff).
-# El nodo re-escala /odom_raw con estos valores y publica /odom; los valores del firmware
-# (firmware_wheel_radius = r0, firmware_wheel_separation = b0) NO se tocan.
-# [VERIFICAR] los valores reales de arranque en el YAML del robot, y qué launch levanta odom_corrector.
-# Unidades: metros. null = todavía no calibrado. No inventar valores: salen de la calibración.
-wheel_radius: null       # r efectivo [m]; se calibra primero (recta de 1.0 m)
-wheel_separation: null   # b_eff [m]; se calibra después (giro de 360°)
+# Valores iniciales (los del paquete del docente, confirmados por el grupo el 2-nov-2026):
+#   wheel_radius     r     = 0.0311 m   -> usado en las 3 corridas de la Parte B (Parte B: sin cambio de r)
+#   wheel_separation b_eff = 0.2259 m   -> valor de PARTIDA de la Parte C; se sustituye por el b_eff calibrado
+#                                          cuando el giro de 360° dé un error < 1 %
+# firmware_* son los valores que asume el firmware (r0, b0): no se tocan.
+/**:
+  ros__parameters:
+    wheel_radius: 0.0311                 # r [m]
+    wheel_separation: 0.2259             # b_eff [m]  (valor de partida de la Parte C)
+    firmware_wheel_radius: 0.0325        # r0 [m] que asume el ESP32, no tocar
+    firmware_wheel_separation: 0.2400    # b0 [m] que asume el ESP32, no tocar
+    encoder_ticks_per_rev: 1320
+    max_linear_vel: 0.30                 # [m/s]
+    max_angular_vel: 1.50                # [rad/s]
+    publish_tf: true
