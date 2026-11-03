@@ -1,6 +1,7 @@
 # RC-0 — Predicciones previas a las pruebas
 
 **Proyecto:** CapyTown — Primer arranque y calibración del robot  
+**Integrantes** Jorge Rivera, Harold Payco, Sebastián Escobar
 **Equipo:** 8
 **Sección:** [S-003]  
 **Fecha de registro:** [30/10/2026]
