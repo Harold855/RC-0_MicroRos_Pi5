@@ -13,7 +13,7 @@
 PREFIJO="${1:?Uso: grabar_bag.sh <prefijo> [carpeta_salida]   (p. ej. rc0_recta_c1)}"
 SALIDA="${2:-bags}"
 
-command -v ros2 >/dev/null 2>&1 || { echo "ros2 no está en el PATH: ¿contenedor y entorno cargado?"; exit 1; }
+command -v ros2 >/dev/null 2>&1 || { echo "ros2 no está en el PATH: ¿el contenedor y el entorno estan cargados?"; exit 1; }
 
 TOPIC="${ODOM_TOPIC:-}"   # uno o varios, separados por espacios; por defecto, TODOS los nav_msgs/Odometry
 if [ -z "$TOPIC" ]; then
