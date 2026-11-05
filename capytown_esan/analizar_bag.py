@@ -1,43 +1,26 @@
 #!/usr/bin/env python3
-"""analizar_bag — de un bag de odometría a los números que van a los CSV (RC-0).
+"""analizar_bag — de un bag de odometría a los números que van a los CSV (RC0)
 
-INTRODUCCIÓN
-------------
-En el laboratorio solo se mide con cinta y transportador; este script saca del
+INTRODUCCIÓN:
+En el laboratorio solo se mide con cinta y transportador, este script saca del
 bag lo que dice la odometría y calcula el error contra lo medido:
 
-  recta : d_odom (norma del desplazamiento x–y), componente longitudinal y
+  - recta : d_odom (norma del desplazamiento x–y), componente longitudinal y
           desvío lateral, entre el inicio y el fin del tramo en que el robot
           se movió.
-  giro  : θ_odom acumulada (con unwrap, en grados, con signo: + antihorario).
+  - giro  : θ_odom acumulada (con unwrap, en grados, con signo: + antihorario).
 
 El tramo de movimiento se detecta con la velocidad de la propia odometría
 (|twist.linear.x| para rectas, |twist.angular.z| para giros) y no con la pose
-absoluta: así reposicionar el robot a mano antes o después, o un reinicio del
-bringup, no contaminan la medida. Un bag con varias corridas se separa con
+absoluta, así reposicionar el robot a mano antes o después, o un reinicio del
+bringup, no contamina la medida. Un bag con varias corridas se separa con
 --segmento N (use --listar para ver los tramos).
 
-Por defecto IMPRIME y no escribe nada. Solo con --escribir añade UNA fila al CSV
-indicado (nunca sobrescribe; si el archivo tiene contenido, su encabezado debe
-coincidir exactamente). La regla para corregir `r` o `b_eff` NO está aquí: la
-deduce el grupo; --b-eff-propuesto se teclea, no se calcula.
-Nota: calibrate_beff.py (docente) ya escribe su propia fila en calibration_log.csv con este mismo
-encabezado; --csv calibracion solo sirve para anotar a mano una iteración que no pasó por ese script.
-
-Unidades: las distancias van en METROS y los ángulos en GRADOS en los CSV
-(los encabezados del reto no llevan unidades; dígalo en el README).
-Error lineal: 100·|d_real − d_odom|/d_real. Error angular: por defecto sobre el
-ángulo reportado (--denominador medido para el otro). [VERIFICAR con el docente]
-
-Ejemplos:
-  python3 capytown_esan/analizar_bag.py bags/rc0_recta --prueba recta --listar
-  python3 capytown_esan/analizar_bag.py bags/rc0_recta --prueba recta --d-real 0.985
-  python3 capytown_esan/analizar_bag.py bags/rc0_recta --prueba recta --d-real 0.985 \\
-      --csv linea_recta --corrida 1 --r 0.0325 --desvio-m 0.012 --escribir linea_recta.csv
-
-(El valor de r del ejemplo es inventado; use el que tenga el robot.)
-Estado: la lectura del bag usa plot_odom.leer_odometria (rosbag2_py), sin probar
-con un bag real. Todo lo demás está probado con datos sintéticos.
+Por defecto imprime y no escribe nada. Solo con --escribir añade UNA fila al CSV
+indicado (nunca sobrescribe, si el archivo tiene contenido, su encabezado debe
+coincidir exactamente). La regla para corregir `r` o `b_eff` --b-eff-propuesto se teclea, no se calcula.
+Nota: calibrate_beff.py ya escribe su propia fila en calibration_log.csv con este mismo
+encabezado, --csv calibracion solo sirve para anotar a mano una iteración que no pasó por ese script.
 """
 
 import argparse
@@ -60,10 +43,7 @@ ENCABEZADOS = {
     "calibracion": ["timestamp", "iteracion", "b_eff_antes", "objetivo_deg", "medido_deg", "b_eff_despues", "error_pct"],
 }
 
-
-# --------------------------------------------------------------------------
-# Cálculo (puro)
-# --------------------------------------------------------------------------
+# Cálculo 
 def analizar(
     t: Sequence[float],
     poses: Sequence[ou.Pose],
@@ -112,10 +92,7 @@ def listar_tramos(t, vel, prueba, umbral=None):
     col = 0 if prueba == "recta" else 1
     return ou.segmentos_movimiento(t, [v[col] for v in vel], umbral)
 
-
-# --------------------------------------------------------------------------
-# CSV (nunca sobrescribe)
-# --------------------------------------------------------------------------
+# CSV (nunca se sobrescriben)
 def _fmt(x) -> str:
     return f"{x:.4f}" if isinstance(x, float) else str(x)
 
@@ -152,7 +129,6 @@ def construir_fila(tipo: str, r: Dict, a: argparse.Namespace) -> List[str]:
                 _fmt(float(a.b_eff_propuesto)), f"{err:.2f}"]
     raise ValueError(f"tipo de CSV desconocido: {tipo}")
 
-
 def anexar_fila(ruta: str, tipo: str, fila: List[str], permitir_duplicado: bool = False) -> str:
     """Añade `fila` a `ruta`. Crea el encabezado si el archivo no existe o solo tiene espacios.
     En linea_recta.csv rechaza repetir la misma corrida con el mismo r (salvo permitir_duplicado)."""
@@ -185,10 +161,7 @@ def anexar_fila(ruta: str, tipo: str, fila: List[str], permitir_duplicado: bool 
         w.writerow(fila)
     return ruta
 
-
-# --------------------------------------------------------------------------
-# Validación de lo que se teclea en el laboratorio (errores típicos: cm en vez de m, coma decimal...)
-# --------------------------------------------------------------------------
+# Validación de lo que se teclea (errores típicos como cm en vez de m, coma decimal...)
 def _rango(nombre: str, valor, minimo: float, maximo: float, unidad: str, pista: str = "") -> None:
     if valor is None:
         return
@@ -218,7 +191,6 @@ def validar_entradas(a: argparse.Namespace) -> None:
         raise ValueError(f"--variante={a.variante!r}: use A1 o A2 (S-003).")
 
 
-# --------------------------------------------------------------------------
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="Números de un bag de odometría para los CSV de RC-0.")
     ap.add_argument("bag", help="carpeta del bag")
@@ -252,7 +224,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         a.theta_medido = a.theta_real
 
     try:
-        validar_entradas(a)  # primero lo barato: errores de captura, antes de abrir el bag
+        validar_entradas(a)  # errores de captura, antes de abrir el bag
         import plot_odom  # lee el bag (necesita rosbag2_py)
 
         plot_odom.chequear_bag(a.bag.rstrip("/\\"))
