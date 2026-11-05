@@ -7,9 +7,9 @@ que se usarán en los retos posteriores: el radio de rueda **r** y el ancho de v
 ## Equipo 
 | Integrante | Parte realizado | Rol Asignado |
 |---|---|---|
-| ---| parte A | Control |
-| -- | parte B | Integración y planificacion |
-| --- | parte C | Percepcion |
+| Jorge River a| parte A | Control |
+| Harold Payco| parte B | Integración y planificacion |
+| Sebastian Escobar | parte C | Percepcion |
 
 ## Datos 
 
