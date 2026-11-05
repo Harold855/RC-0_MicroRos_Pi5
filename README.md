@@ -78,7 +78,7 @@ Se predice por escrito, antes de medir, qué se espera (`informe/predicciones.md
 ## Las partes
 
 ### Parte A — Arranque
-**Qué es lo que se hace** Se enciende el robot y se verifica la cadena placa → micro-ROS → ROS 2: nodo de la placa, topics `/cmd_vel`, `/odom`, `/imu`, `/scan`, frecuencias de `/odom` e `/imu`,
+**¿Qué es lo que se hace?** Se enciende el robot y se verifica la cadena placa → micro-ROS → ROS 2: nodo de la placa, topics `/cmd_vel`, `/odom`, `/imu`, `/scan`, frecuencias de `/odom` e `/imu`,
 dominio igual en la Pi y la placa, aislamiento (solo se ve el robot propio), rosbag2 y `rqt_graph`. Resultado: `setup_log.txt`.
 
 **Desarrollo (RosCar 4).**
@@ -101,7 +101,7 @@ dominio igual en la Pi y la placa, aislamiento (solo se ve el robot propio), ros
 **Archivos:** `setup_log.txt` (nodos, topics con tipo, frecuencias, QoS, E2 y nota del cambio de dominio), `plots/rqt_graph_roscar4.png`, `config/entorno_rc0.sh`, `config/atajos_rc0.sh`, `informe/predicciones.md`. Detalle y salidas de terminal: `docs/registro_roscar4.md`.
 
 ### Parte B — Recta de 1.0 m: calibración de `r`
-**Qué es lo que se hace** En la variante A1, de oeste a este sobre B4–C4, se manda `linear.x = 0.10 m/s` durante 10 s, con un bag grabando, y se mide con cinta la distancia real `d_real`. `analizar_bag.py` obtiene `d_odom` del bag y el error
+**¿Qué es lo que se hace?** En la variante A1, de oeste a este sobre B4–C4, se manda `linear.x = 0.10 m/s` durante 10 s, con un bag grabando, y se mide con cinta la distancia real `d_real`. `analizar_bag.py` obtiene `d_odom` del bag y el error
 `|d_real − d_odom| / d_real`. Solo se ajusta `r`; `b_eff` no se toca. Resultado: `linea_recta.csv` y el bag `rc0_recta`.
 
 **Desarrollo (RosCar 4).**
@@ -141,7 +141,7 @@ dominio igual en la Pi y la placa, aislamiento (solo se ve el robot propio), ros
 **Archivos:** `linea_recta.csv` (`corrida, r, d_real, d_odom, error_%, desvio_lateral`), `bags/rc0_recta_cN_<fecha>/` (cada corrida), `bags/rc0_recta/` (bag final), `bitacora_corridas.csv` (batería, parámetros y resultado de cada corrida), `bitacora_params.csv` (cada cambio de `r` o `b_eff`).
 
 ### Parte C — Giro en sitio: calibración de `b_eff`
-**Qué es lo que se hace** Sobre la cartulina celeste (tile B2 de A1), con `r` fijo, el robot gira en sitio en sentido antihorario hasta que `/odom` acumule 360° (`calibrate_beff`, `angular_vel = 0.5 rad/s`). Se mide con cinta el ángulo físico real y el programa calcula el `b_eff` propuesto; se aplica y se repite hasta que el error sea menor del 1 %.
+**¿Qué es lo que se hace?** Sobre la cartulina celeste (tile B2 de A1), con `r` fijo, el robot gira en sitio en sentido antihorario hasta que `/odom` acumule 360° (`calibrate_beff`, `angular_vel = 0.5 rad/s`). Se mide con cinta el ángulo físico real y el programa calcula el `b_eff` propuesto; se aplica y se repite hasta que el error sea menor del 1 %.
 El error angular es `|medido − objetivo| / objetivo`.
 
 **Método de medida.** Una cruz de cinta en el centro del tile marca la posición y la orientación inicial; una línea de cinta en el chasis se alinea con ella. Con el robot detenido y sin tocarlo, se tiende una tira de cinta sobre la línea del chasis, se marcan puntos a L = 50 cm del centro sobre la línea de referencia y sobre esa tira, se mide la cuerda `c` entre ellos y `δ = 2·arcsen(c / 2L)`; el ángulo total es 360° ± δ. Con un video se confirma que fue una sola vuelta. (El método de las dos distancias con `arctan`, usado al principio, solo vale para ángulos pequeños.)
@@ -166,13 +166,13 @@ El error angular es `|medido − objetivo| / objetivo`.
 **Archivos:** `calibration_log.csv` (`timestamp, iteracion, b_eff_antes, objetivo_deg, medido_deg, b_eff_despues, error_pct`), `bags/rc0_giro/` (bag del último giro), `config/wheel_params.yaml` (valores adoptados: `r = 0.03145`, `b_eff = 0.2138`).
 
 ### Parte D — Validación en la segunda variante
-**Qué es lo que se hace** En la variante A2, con `r` y `b_eff` fijos y sin recalibrar: dos rectas de 1.0 m sobre C4–D4 (este → oeste, inicio D4|E4, fin B4|C4) y un giro de 360° en el tile A1 en sentido horario. Se mide cuánto se sostiene la calibración en otro montaje y se compara con el último error de A1. 
+**¿Qué es lo que se hace?** En la variante A2, con `r` y `b_eff` fijos y sin recalibrar: dos rectas de 1.0 m sobre C4–D4 (este → oeste, inicio D4|E4, fin B4|C4) y un giro de 360° en el tile A1 en sentido horario. Se mide cuánto se sostiene la calibración en otro montaje y se compara con el último error de A1. 
 Comandos: `corrida recta A2 N` y `corrida giro A2 N` (el giro horario usa `secuencia_rc0.py`, `angular.z` negativo).
 
 **Archivos:** `validacion.csv` (`variante, prueba, valor_real, valor_odom, error_%`), `bags/rc0_val_recta/`, `bags/rc0_val_giro/`.
 
 ### Parte E — Gráficas e informe
-**Qué es lo que se hace** `plot_odom.py` lee cada bag final y genera dos PNG: la trayectoria x-y y la orientación θ(t) (con el ángulo desenvuelto, de modo que 360° se ve como 360° y no como 0°). Con los CSV, `generar_tablas_informe.py` arma las tablas del informe de una página: predicción, recta, `b_eff`, validación y explicación de las diferencias entre predicción y medición. Las gráficas de B y C se encuentran en `plots/`. La D no tiene un gráfico exacto por falta de pruebas
+**¿Qué es lo que se hace?** `plot_odom.py` lee cada bag final y genera dos PNG: la trayectoria x-y y la orientación θ(t) (con el ángulo desenvuelto, de modo que 360° se ve como 360° y no como 0°). Con los CSV, `generar_tablas_informe.py` arma las tablas del informe de una página: predicción, recta, `b_eff`, validación y explicación de las diferencias entre predicción y medición. Las gráficas de B y C se encuentran en `plots/`. La D no tiene un gráfico exacto por falta de pruebas
 
 **Archivos:** `plots/`, `informe.pdf`.
 
@@ -187,5 +187,7 @@ Comandos: `corrida recta A2 N` y `corrida giro A2 N` (el giro horario usa `secue
 | E | `plots/`, `capytown_esan/plot_odom.py`, `informe.pdf` |
 
 ## Aclaración sobre uso de IA y trabajo en equipo
-**¿Dónde se usó?** Realización de códigos y scripts para el desarrollo del reto 0 (proyecto CapyTown), estructura de la documentación e informe requeridos
+**¿Dónde se usó?** Realización de códigos y scripts para el desarrollo del reto 0 (proyecto CapyTown), estructura de la documentación e informe requeridos.
+
+
 **¿Qué trabajo realizó el grupo?** El grupo realizó las mediciones, ejecuciones de comandos, pruebas y calibraciones de los parámetros, a parte del cirucito físico. El segundo integrante se encargó de todo el repositorio (incluyendo códigos, documentos, estructura y subida de los archivos correspondientes obtenidos durante las reservas de laboratorio), además de la verificación de todos los archivos dentro de este. 
