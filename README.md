@@ -5,10 +5,10 @@ Nuestro grupo pone en ejecución al robot, verifica la cadena **placa → micro-
 que se usarán en los retos posteriores: el radio de rueda **r** y el ancho de vía efectivo **b_eff**.
 
 ## Equipo 
-| Integrante | Parte realizado | Rol Asignado |
+| Integrante | Parte realizada | Rol Asignado |
 |---|---|---|
-| Jorge River a| parte A | Control |
-| Harold Payco| parte B | Integración y planificacion |
+| Jorge Rivera | parte A | Control |
+| Harold Payco | parte B | Integración y planificacion |
 | Sebastian Escobar | parte C | Percepcion |
 
 ## Datos 
@@ -18,7 +18,7 @@ que se usarán en los retos posteriores: el radio de rueda **r** y el ancho de v
 | Sección | **S-003** |
 | Variantes | **A1 «Torre»** (calibración, Partes B y C) · **A2 «Escalón»** (validación, Parte D, sin recalibrar) |
 | Robot | **RosCar 8** (Wi-Fi `RosCar8`, escritorio remoto `10.42.0.1::5900`) |
-| `ROS_DOMAIN_ID` | **8** (equipo n → n), en la Pi y en la placa. Las primeras mediciones de la Parte A se hicieron con 20, el valor de fábrica de Yahboom |
+| `ROS_DOMAIN_ID` | **8** (equipo n → ROS_DOMAIND: n), en la Pi y en la placa. Las primeras mediciones de la Parte A se hicieron con 20, el valor de fábrica de Yahboom |
 | `r` | 0.0311 m (usado en las corridas de la Parte B) |
 | `b_eff` | 0.2259 m (valor de partida de la Parte C) |
 | Odometría evaluada | `/odom` (la publica `odom_corrector` a partir de `/odom_raw` del firmware) |
@@ -115,8 +115,8 @@ verificar · tablas                       # estado de la entrega y tablas del in
 ## Las partes
 
 ### Parte A — Arranque
-**Qué se hace.** Se enciende el robot y se verifica la cadena placa → micro-ROS → ROS 2: nodo de la placa, topics `/cmd_vel`, `/odom`, `/imu`, `/scan`, frecuencias de `/odom` e `/imu`,
-dominio igual en la Pi y la placa, aislamiento (solo se ve el robot propio), rosbag2 y `rqt_graph`. Resultado: `setup_log.txt`.
+**Qué es lo que se hace.** Se enciende el robot y se verifica la cadena placa a micro-ROS que tenga ROS 2: nodo de la placa, topics `/cmd_vel`, `/odom`, `/imu`, `/scan`, frecuencias de `/odom` e `/imu`,
+dominio igual en la Pi y la placa, aislamiento, rosbag2 y `rqt_graph`. Resultado: `setup_log.txt`.
 
 **Desarrollo.**
 1. *Identificación.* RosCar 8: Raspberry Pi 5 y ESP32-S3 unidos por serie (`/dev/ttyUSB0`, 921600). El micro-ROS Agent corre como el contenedor `micro_ros_agent` (política de reinicio `unless-stopped`, arranca con la Pi); el trabajo con ROS 2 se hace en el contenedor `ros2_dev`.
@@ -137,11 +137,11 @@ dominio igual en la Pi y la placa, aislamiento (solo se ve el robot propio), ros
 **Archivos:** `setup_log.txt` (nodos, topics con tipo, frecuencias, QoS y conexiones de la odometría, y nota del cambio de dominio), `config/entorno_rc0.sh`, `config/atajos_rc0.sh`, `informe/predicciones.md`. Las salidas de terminal de la sesión están en `docs/registro_sesion_2026-11-02.md`.
 
 ### Parte B — Recta de 1.0 m: calibración de `r`
-**Qué se hace.** En la variante A1, de oeste a este sobre B4–C4, se manda `linear.x = 0.10 m/s` durante 10 s, con un bag grabando, y se mide con cinta la distancia real `d_real`. `analizar_bag.py` obtiene `d_odom` del bag y el error
+**Qué es lo que se hace.** Primero, en la variante A1 (oeste a este sobre B4–C4) , se manda `linear.x = 0.10 m/s` durante 10 s, con un bag grabando, y se mide con cinta la distancia real `d_real`. `analizar_bag.py` obtiene `d_odom` del bag y el error
 `|d_real − d_odom| / d_real`. Se repite 3 veces. Solo se ajusta `r`; `b_eff` no se toca. Resultado: `linea_recta.csv` y el bag `rc0_recta`.
 
 **Desarrollo.**
-1. *Preparación.* Cinta masking marcando el inicio (borde A4|B4) y el fin (borde C4|D4) de las dos cartulinas amarillas. El robot se coloca con el eje de las ruedas sobre la línea de inicio, centrado en el carril y mirando al este. Una persona opera y frena; otra mide.
+1. *Preparación.* Cinta masking marcando el inicio (en borde A4 y B4) y el fin (en borde C4 y D4) de las dos cartulinas amarillas. El robot se coloca con el eje de las ruedas sobre la línea de inicio, centrado en el carril y mirando al este. 
 2. *Corrida.* `corrida recta A1 N` hace el preflight, pide confirmar la lista de seguridad (cargador desconectado, zona despejada, persona lista para frenar), graba el bag, ejecuta la secuencia con cuenta atrás y exige escribir `MOVER` antes de publicar en `/cmd_vel`.
 3. *Medición.* `d_real` con cinta métrica, desde la línea de inicio hasta la misma marca del chasis; desvío lateral y su lado. `d_odom` sale del bag: desplazamiento entre el inicio y el fin del tramo en que el robot se movió.
 4. *Resultados* (`r = 0.0311 m`, `b_eff = 0.2259 m`):
@@ -158,7 +158,7 @@ dominio igual en la Pi y la placa, aislamiento (solo se ve el robot propio), ros
 **Archivos:** `linea_recta.csv` (`corrida, r, d_real, d_odom, error_%, desvio_lateral`), `bags/rc0_recta_cN_<fecha>/` (cada corrida), `bags/rc0_recta/` (bag final), `bitacora_corridas.csv` (batería, parámetros y resultado de cada corrida), `bitacora_params.csv` (cada cambio de `r` o `b_eff`, si lo hubo).
 
 ### Parte C — Giro en sitio: calibración de `b_eff`
-**Qué se hace.** Sobre la cartulina celeste (tile B2 de A1), con `r` fijo, el robot gira en sitio en sentido antihorario hasta que `/odom` acumule 360° (`calibrate_beff`, `angular_vel = 0.5 rad/s`). Se mide con cinta el ángulo físico real y el programa calcula el `b_eff` propuesto; se aplica y se repite hasta que el error sea menor del 1 %.
+**Qué es lo que se hace** Sobre la cartulina celeste (tile B2 de A1), con `r` fijo, el robot gira en sitio en sentido antihorario hasta que `/odom` acumule 360° (`calibrate_beff`, `angular_vel = 0.5 rad/s`). Se mide con cinta el ángulo físico real y el programa calcula el `b_eff` propuesto; se aplica y se repite hasta que el error sea menor del 1 %.
 El error angular es `|medido − objetivo| / objetivo`
 
 **Método.** Una cruz de cinta en el centro del tile marca la posición y la orientación inicial; una línea de cinta en el chasis se alinea con ella. Después del giro se mide cuánto falta o sobra de la vuelta con la separación entre la línea del chasis y la del piso en dos distancias al centro (25 y 75 cm): `δ = arctan(Δseparación / 50 cm)`. El ángulo total es 360° ± δ según si el robot se pasó o se quedó corto. Se corrige solo `b_eff` (`aplicar wheel_separation`), nunca el objetivo ni el tiempo: lo que se calibra es la relación entre lo que dice `/odom` y lo que gira el robot.
@@ -174,7 +174,7 @@ Comandos: `corrida recta A2 N` y `corrida giro A2 N` (el giro horario usa `secue
 ### Parte E — Gráficas e informe
 **Qué se hace.** `plot_odom.py` lee cada bag final y genera dos PNG: la trayectoria x-y y la orientación θ(t) (con el ángulo desenvuelto, de modo que 360° se ve como 360° y no como 0°). Con los CSV, `generar_tablas_informe.py` arma las tablas del informe de una página: predicción, recta, `b_eff`, validación y explicación de las diferencias entre predicción y medición.
 
-**Archivos:** `plots/` (8 PNG: dos por cada bag final), `informe.pdf`.
+**Archivos:** `plots/`, `informe.pdf`.
 
 ## Archivos resultantes por parte
 
@@ -184,4 +184,4 @@ Comandos: `corrida recta A2 N` y `corrida giro A2 N` (el giro horario usa `secue
 | B | `linea_recta.csv`, `bags/rc0_recta/`, `bitacora_corridas.csv` |
 | C | `calibration_log.csv`, `bags/rc0_giro/`, `config/wheel_params.yaml` |
 | D | `validacion.csv`, `bags/rc0_val_recta/`, `bags/rc0_val_giro/` |
-| E | `plots/` (8 PNG), `capytown_esan/plot_odom.py`, `informe.pdf` |
+| E | `plots/`, `capytown_esan/plot_odom.py`, `informe.pdf` |
