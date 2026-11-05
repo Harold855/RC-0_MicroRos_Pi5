@@ -185,9 +185,3 @@ Comandos: `corrida recta A2 N` y `corrida giro A2 N` (el giro horario usa `secue
 | C | `calibration_log.csv`, `bags/rc0_giro/`, `config/wheel_params.yaml` |
 | D | `validacion.csv`, `bags/rc0_val_recta/`, `bags/rc0_val_giro/` |
 | E | `plots/` (8 PNG), `capytown_esan/plot_odom.py`, `informe.pdf` |
-
-## Notas técnicas
-- **Un parámetro a la vez:** `r` primero y `b_eff` después, porque `k_ang` depende de los dos.
-- **Seguridad:** nada mueve el robot por defecto. `secuencia_rc0.py` y `corrida.sh` piden confirmación explícita, limitan la velocidad (0.20 m/s y 1.0 rad/s) y paran por odometría; el cargador se desconecta solo durante el movimiento.
-- **Reloj de la Pi:** está desfasado, así que las fechas de logs y bags no son fiables; el orden de las corridas lo da el número de corrida.
-- **Valores en caliente:** `aplicar_param.sh` cambia `r` y `b_eff` solo en la memoria de `odom_corrector`; al relanzar el bringup se cargan los de `wheel_params.yaml`.
