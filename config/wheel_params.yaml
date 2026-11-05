@@ -9,8 +9,8 @@
 # firmware_* son los valores que asume el firmware (r0, b0): no se tocan.
 /**:
   ros__parameters:
-    wheel_radius: 0.0311                 # r [m]
-    wheel_separation: 0.2259             # b_eff [m]  (valor de partida de la Parte C)
+    wheel_radius: 0.0230                 # r [m]
+    wheel_separation: 0.1350             # b_eff [m]  (valor de partida de la Parte C)
     firmware_wheel_radius: 0.0325        # r0 [m] que asume el ESP32, no tocar
     firmware_wheel_separation: 0.2400    # b0 [m] que asume el ESP32, no tocar
     encoder_ticks_per_rev: 1320
