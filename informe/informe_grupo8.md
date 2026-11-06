@@ -1,6 +1,6 @@
 # RC-0 - Primer arranque y calibración del robot
 
-**Grupo 8 · S-003** | Integrantes: Harold Payco, Sebastián Escobar, Jorge Rivera | Calibración: A1 «Torre» | Validación: A2 «Escalón» | ROS_DOMAIN_ID=8
+**Grupo 8 · S-003** | Integrantes: Jorge Rivera, Harold Payco, Sebastián Escobar  | Calibración: A1 «Torre» | Validación: A2 «Escalón» | ROS_DOMAIN_ID=8
 
 ## Predicción inicial
 
@@ -38,5 +38,7 @@ Valor adoptado: **b_eff = 0.2138 m**, error 0.56 % en dos giros seguidos (< 1 %)
 
 **Predicción vs. medición (recta).** Se predijeron 98 cm con cinta y se midieron entre 95.7 y 96.5 cm (promedio 96.2 cm con r = 0.0311): la distancia real quedó a ~1.8 cm de lo predicho. Para `/odom` se predijeron 100 cm y se obtuvieron entre 94.5 y 95.9 cm. La predicción de odometría suponía los parámetros nominales del firmware (`r0 = 0.0325 m`); con `r = 0.0311 m`, `odom_corrector` escala la distancia por `r / r0 = 0.9569`, de modo que `/odom` marca menos que el nominal. **Giro:** la predicción (gira menos de 360° con b_eff = W) no se contrastó tal cual, porque la serie de la Parte C no partió de W; con los b_eff efectivos (≈ 0.21 m, bastante mayor que W = 0.135 m) el robot giró 352°–375° cuando `/odom` marcó 360°. Esto es coherente con que `b_eff` sea un parámetro efectivo (deslizamiento de las ruedas, huella de contacto) y no el ancho geométrico. La predicción del dominio se evalúa con la Parte A (dominio 20 vacío).
 
-**Parámetros:** r = 0.03145 m (Parte B; inicial 0.0311) | b_eff = 0.2138 m (Parte C; inicial del docente 0.2259) | **Archivos:** setup_log.txt, linea_recta.csv, calibration_log.csv, validacion.csv, bags rosbag, plot_odom.py y gráficas
+**Graficas Reconstruidas:** Las gráficas de A, B y C se encuentran en `plots/graficas_reconstruidas`, estas fueron reconstruidas, debido a que el grupo no consiguió descargar las gráficas generadas por /odom_util, pero gracias a la IA, logramos reconstruirlas, tal cual estaba la original (solo teníamos capturas en baja calidad de las originales). La D no tiene un gráfico exacto por falta de pruebas.
+
+**Parámetros:** r = 0.03145 m (Parte B; inicial 0.0311) | b_eff = 0.2138 m (Parte C, inicial: 0.2259) | **Archivos:** setup_log.txt, linea_recta.csv, calibration_log.csv, validacion.csv, bags rosbag, plot_odom.py y gráficas
 
