@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """secuencia_rc0 — secuencia de recta o giro para RC-0 (rol Planificación).
 
-INTRODUCCIÓN
-------------
+INTRODUCCIÓN:
 Publica Twist en /cmd_vel para las pruebas del reto, con seguridad por defecto:
 
   * dry_run:=true (por defecto): solo imprime el plan y comprueba que haya
@@ -13,22 +12,27 @@ Publica Twist en /cmd_vel para las pruebas del reto, con seguridad por defecto:
   * Velocidades con tope duro (|v| ≤ 0.20 m/s, |ω| ≤ 1.0 rad/s) y duración
     máxima: ningún parámetro puede dejar el robot girando o avanzando sin fin.
   * Al terminar, por cualquier causa (fin normal, odometría que se corta,
-    Ctrl+C, excepción) se envían varios Twist en cero.
+    Ctrl+C, etc) se envían varios Twist en cero.
   * Una parada por software NO es un corte de energía: depende del enlace.
     Operador al lado y el robot a la vista. [VERIFICAR] si el firmware tiene
     watchdog de /cmd_vel y qué hace el botón de reinicio.
 
 Modos y criterio de parada (parada_por):
-  recta, tiempo      v durante `duracion` s a `rate_hz` (por defecto 0.10 m/s,
-                     10 s, 10 Hz = Anexo B del reto). Igual que ros2 topic pub,
-                     pero con temporizador y parada garantizada.
-  recta, odometria   avanza hasta que la odometría marque `distancia_m`.
-                     (Ayuda para el bonus de 1 m; el error real contra la cinta
-                     dependerá de la calibración y de cuánto patine al frenar.)
-  giro,  odometria   gira hasta que |θ acumulada| de la odometría alcance
-                     `target_angle_deg` (por defecto 360°).
-  giro,  tiempo      gira durante target/ω segundos, sin mirar la odometría.
-
+                    | v durante `duracion` s a `rate_hz` (por defecto 0.10 m/s,
+  recta, tiempo     | 10 s, 10 Hz = Anexo B del reto). Igual que ros2 topic pub,
+  _________________ | pero con temporizador y parada garantizada.
+                    
+                    | avanza hasta que la odometría marque `distancia_m`.
+  recta, odometria  | (Ayuda para el bonus de 1 m; el error real contra la cinta
+  _________________ | dependerá de la calibración y de cuánto patine al frenar.)
+  
+  giro,  odometria  | gira hasta que |θ acumulada| de la odometría alcance
+                    | `target_angle_deg` (por defecto 360°).
+  _________________ |
+  
+  giro,  tiempo     | gira durante target/ω segundos, sin mirar la odometría.
+  _________________ |
+  
 Sentido del giro: `sentido:=antihorario` (+Z, ω > 0) o `sentido:=horario`
 (ω < 0); `omega` siempre es positivo. En S-003: calibración A1 antihorario,
 validación A2 horario. Ojo: el sentido no cambia el signo de v; el robot avanza
@@ -39,20 +43,10 @@ Si la odometría deja de llegar durante una prueba por odometría (>
 Con odometría real, tras parar se imprime lo que midió el propio nodo; los
 números para los CSV salen del bag con analizar_bag.py.
 
-Uso (el bag se graba aparte, ANTES de mover):
-  # dry-run
-  python3 capytown_esan/secuencia_rc0.py --ros-args -p modo:=recta
-  # movimiento real, supervisado
-  python3 capytown_esan/secuencia_rc0.py --ros-args -p modo:=giro -p sentido:=horario \\
-      -p dry_run:=false -p confirmar_movimiento:=true
-
 Los parámetros numéricos se pasan con decimales (-p omega:=1.0, no 1).
 Códigos de salida: 0 ok · 1 dry-run con problemas · 2 parámetros/odometría inválidos · 3 falta confirmar_movimiento ·
 4 no llega odometría · 5 cancelado · 6 abortado durante la prueba · 7 diagnóstico previo con FALLAS ·
 9 error inesperado (el mensaje dice cuál).
-
-Estado: la lógica (validación, plan, criterio de parada) está probada con
-pytest; el nodo ROS 2 NO se ha ejecutado contra ROS ni contra el robot.
 """
 
 import math
@@ -74,9 +68,7 @@ TIPO_ODOM = "nav_msgs/msg/Odometry"
 PARADA_N = 5  # Twist en cero al terminar
 
 
-# --------------------------------------------------------------------------
-# Lógica pura (probada con pytest)
-# --------------------------------------------------------------------------
+# Lógica pura 
 def validar_y_planear(
     modo: str,
     sentido: str = "antihorario",
@@ -132,7 +124,6 @@ def validar_y_planear(
         "mensajes_aprox": int(round(esperado * rate_hz)),
     }
 
-
 class Acumulador:
     """Distancia y ángulo recorridos según la odometría, desde la primera pose recibida."""
 
@@ -180,10 +171,7 @@ def motivo_de_fin(plan: Dict, transcurrido: float, acum: Acumulador, edad_odom: 
         return "ABORTADO: duración máxima superada"
     return None
 
-
-# --------------------------------------------------------------------------
-# Nodo ROS 2 (necesita rclpy; no probado aquí)
-# --------------------------------------------------------------------------
+# Nodo ROS 2 (necesita rclpy)
 def _ahora() -> str:
     return datetime.now(timezone.utc).astimezone().isoformat(timespec="milliseconds")
 
