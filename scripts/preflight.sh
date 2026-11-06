@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Comprobaciones de SOLO LECTURA antes de mover el robot. No publica en /cmd_vel ni cambia nada.
+# Comprobaciones de LECTURA antes de mover el robot. No publica en /cmd_vel ni cambia nada.
 # Uso (dentro del contenedor ros2_dev, en la raíz del repo):  bash scripts/preflight.sh
 # Cada línea es OK / AVISO / FALLA con el motivo y qué hacer. Termina con código != 0 si hay alguna FALLA.
 
