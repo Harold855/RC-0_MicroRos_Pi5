@@ -1,0 +1,37 @@
+tipo_documento: registro_experimental_no_rosbag
+parte: C
+variante: A1_Torre
+robot_fisico: ROSCar_4
+grupo: 8
+seccion: S-003
+iteracion: 11
+identificador_rosbag: rc0_giro_i11_20260715_140847
+ruta_rosbag_original: bags/rc0_giro_i11_20260715_140847
+nombre_db3_observado: rc0_giro_i11_20260715_140847_0.db3
+fecha_según_reloj_pi: '2026-07-15'
+fecha_real_de_sesion: no_determinada_por_el_reloj_pi
+nota_fecha: 'La fecha mostrada por la Raspberry Pi estaba desfasada.'
+parametros_aplicados:
+  wheel_radius_m: 0.03145
+  wheel_separation_m: 0.2138
+  velocidad_angular_ordenada_rad_s: 0.50
+  giro_objetivo_deg: 360
+  sentido: antihorario
+medicion_fisica:
+  angulo_total_deg: 358.0
+  error_respecto_objetivo_pct: 0.56
+  cumple_error_menor_1_pct: true
+lectura_script_calibrate_beff:
+  giro_odom_acumulado_aproximado_deg: 361.8
+  propuesta_de_b_eff_m_no_aplicada: 0.2150
+informacion_extraida_de_consola:
+  duracion_informada_por_corrida_s: 34.423
+  mensajes_totales_informados_por_corrida: 1518
+  muestras_odom_contadas_por_plot: 384
+  duracion_informada_por_plot_s: 34.42
+  desplazamiento_neto_xy_odom_m: 0.0035
+  orientacion_final_odom_plot_deg: +361.70
+  almacenamiento_reportado_por_plot: sqlite3
+  grafica_xy: plots/rc0_giro_i11_20260715_140847_xy.png
+  grafica_theta_t: plots/rc0_giro_i11_20260715_140847_theta_t.png
+
