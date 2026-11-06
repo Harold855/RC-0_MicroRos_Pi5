@@ -127,7 +127,7 @@ if [ "$MODO" != "calibrar_b" ] && [ "$RC" -ne 0 ]; then
 fi
 
 # -------------------------------------- 5. Parar el bag y comprobarlo -------------------------------------------------
-limpia
+limpiar
 BAT_D="$(leer_bat)"; echo "batería después (valor crudo): ${BAT_D:-?}"
 [ -f "$BAGDIR/metadata.yaml" ] && ls "$BAGDIR"/*.db3 >/dev/null 2>&1 \
   || { echo "ERROR: el bag $BAGDIR quedó incompleto (sin metadata.yaml o sin .db3): se cortó la grabación." >&2; exit 3; }
