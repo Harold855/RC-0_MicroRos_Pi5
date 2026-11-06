@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-# Corrida guiada RC-0: comprueba el entorno, graba el bag, mueve el robot (con su confirmación), para el bag,
-# pide lo que mediste con cinta/transportador y arma la fila del CSV. Cada paso que falla dice que falló y qué hacer.
+# Corrida guiada para el Reto 0
+# Tarea: comprueba el entorno, graba el bag, mueve el robot (con confirmación), para el bag, pide lo que se midió con cint o transportador y arma la fila del CSV. Cada paso que falla dice que falló y qué hacer.
 #
-# Uso (dentro del contenedor, en la raíz del repo, con el robot DESCONECTADO del cargador):
+# Uso (dentro del contenedor, en la raíz del repositorio, con el robot sin cargador):
 #   bash scripts/corrida.sh recta      A1 <n> [--rapido]   # Parte B: recta de calibración -> linea_recta.csv
 #   bash scripts/corrida.sh calibrar_b A1 <n> [--rapido]   # Parte C: giro con calibrate_beff del docente (graba el bag)
 #   bash scripts/corrida.sh recta      A2 <n> [--rapido]   # Parte D: recta de validación  -> validacion.csv
 # <n> = número de corrida/iteración (1, 2, 3...). --rapido salta el preflight (úsalo en repeticiones seguidas).
 #
-# NO mueve el robot por su cuenta: secuencia_rc0.py (o calibrate_beff) sigue pidiendo confirmación; este script solo ordena los pasos. 
-# NO calcula ni aplica r/b_eff (ver scripts/aplicar_param.sh). 
-# Ganchos para pruebas sin robot: RC0_SECUENCIA_CMD, RC0_CALIB_CMD, RC0_ANALIZAR_CMD.
+# no mueve el robot por su cuenta: secuencia_rc0.py (o calibrate_beff) sigue pidiendo confirmación; este script solo ordena los pasos. 
+# no calcula ni aplica r/b_eff (ver scripts/aplicar_param.sh). 
 
 cd "$(dirname "$0")/.." || exit 1
 MODO="${1:-}"; VAR="${2:-}"; N="${3:-}"; RAPIDO=0
@@ -43,7 +42,7 @@ esac
 command -v ros2 >/dev/null 2>&1 || err "ros2 no está en el PATH: entra al contenedor (bash ~/ros2_humble.sh)."
 [ -f capytown_esan/analizar_bag.py ] || err "no encuentro capytown_esan/analizar_bag.py: ejecuta desde la raíz del repo."
 
-# ------------------------------------------ 1. preflight ------------------------------------------------------
+# ------------------------------------------ 1. Verificacion con preflight ------------------------------------------------------
 if [ "$RAPIDO" -eq 0 ]; then
   bash scripts/preflight.sh || { echo; echo "ERROR: el preflight tiene FALLAS. No se mueve nada." >&2; exit 1; }
 else
@@ -55,14 +54,14 @@ leer_bat()   { timeout 6 ros2 topic echo /battery --once 2>/dev/null | awk '/dat
 R_USADO="$(leer_param wheel_radius)"; B_USADO="$(leer_param wheel_separation)"
 [ -n "$R_USADO" ] && [ -n "$B_USADO" ] || err "no pude leer wheel_radius/wheel_separation de /odom_corrector (¿el nodo estara caído?)"
 
-# --------------------------------- 2. lista de comprobación física ----------------------------------------------
+# --------------------------------- 2. Una lista de comprobación física ----------------------------------------------
 cat <<EOF
 
-=== CORRIDA $PREFIJO   (r = $R_USADO m · b_eff = $B_USADO m)
+CORRIDA $PREFIJO   (r = $R_USADO m · b_eff = $B_USADO m)
 Antes de seguir, confirma TODO:
-  1. Cargador DESCONECTADO del robot y sin cables colgando.
+  1. Cargador desconectado del robot 
   2. Zona despejada, $POS.
-  3. Una persona lista para frenar o levantar el robot, otra con la cinta métrica o el transportador.
+  3. Un integrante con la cinta métrica o transportador para medir lo que faltó o sobró. Opcional: Un integrante listo para frenar o levantar el robot (ante cualquier error)
   4. teleop_key cerrado.
 EOF
 read -r -p "Escribe SI cuando todo esté listo (otra cosa cancela): " RESP
@@ -70,7 +69,7 @@ read -r -p "Escribe SI cuando todo esté listo (otra cosa cancela): " RESP
 
 BAT_A="$(leer_bat)"; echo "batería antes (valor crudo): ${BAT_A:-?}"
 
-# ------------------------------------ 3. bag en segundo plano ----------------------------------------------------
+# ------------------------------------ 3. El bag en segundo plano ----------------------------------------------------
 LOGBAG="$(mktemp /tmp/rc0_bag.XXXXXX)"; BAGPID=""
 limpiar() {
   if [ -n "${BAGPID:-}" ] && kill -0 "$BAGPID" 2>/dev/null; then
@@ -100,14 +99,14 @@ BAGDIR="$(sed -n 's/.*->  *\(bags\/[^ ]*\).*/\1/p' "$LOGBAG" | head -1)"
 echo "bag grabando en: $BAGDIR"
 sleep 1
 
-# ------------------------------ 4. movimiento (con la confirmación propia de cada programa) ------------------------------
+# ------------------------------ 4. El movimiento (siempre con confirmación propia de cada programa) ------------------------------
 SEQ=( ${RC0_SECUENCIA_CMD:-python3 capytown_esan/secuencia_rc0.py} )
 CAL=( ${RC0_CALIB_CMD:-ros2 run capytown_esan calibrate_beff} )
 RC=0
 case "$MODO" in
   recta)      "${SEQ[@]}" --ros-args -p modo:=recta -p dry_run:=false -p confirmar_movimiento:=true; RC=$? ;;
   giro)       "${SEQ[@]}" --ros-args -p modo:=giro -p sentido:=horario -p dry_run:=false -p confirmar_movimiento:=true; RC=$? ;;
-  calibrar_b) echo "calibrate_beff: pulsa ENTER cuando lo pida y, al terminar, mide el ángulo REAL con el transportador."
+  calibrar_b) echo "calibrate_beff: pulsa ENTER cuando lo pida y, al terminar, mide el ángulo real con el transportador."
               "${CAL[@]}" --ros-args -p b_eff:="$B_USADO" -p odom_topic:=/odom -p target_angle_deg:=360.0 -p angular_vel:=0.5; RC=$? ;;
 esac
 
@@ -127,8 +126,8 @@ if [ "$MODO" != "calibrar_b" ] && [ "$RC" -ne 0 ]; then
   if [ "$SEGUIR" != "s" ]; then limpiar; echo "Corrida descartada. El bag queda en $BAGDIR (no se borra)."; exit 6; fi
 fi
 
-# -------------------------------------- 5. parar el bag y comprobarlo -------------------------------------------------
-limpiar
+# -------------------------------------- 5. Parar el bag y comprobarlo -------------------------------------------------
+limpia
 BAT_D="$(leer_bat)"; echo "batería después (valor crudo): ${BAT_D:-?}"
 [ -f "$BAGDIR/metadata.yaml" ] && ls "$BAGDIR"/*.db3 >/dev/null 2>&1 \
   || { echo "ERROR: el bag $BAGDIR quedó incompleto (sin metadata.yaml o sin .db3): se cortó la grabación." >&2; exit 3; }
@@ -139,7 +138,7 @@ if [ "$MODO" != "calibrar_b" ] && { [ -z "$CMDN" ] || [ "$CMDN" -eq 0 ]; }; then
   echo "AVISO: el bag NO tiene mensajes de /cmd_vel: la secuencia no publicó o el bag no los vio. Revisa antes de medir." >&2
 fi
 
-# ---------------------------------------- 6. lo que se medio y la fila del CSV -------------------------------------------
+# ---------------------------------------- 6. Lo que se medio y la fila del CSV -------------------------------------------
 pedir() {  # pedir "texto" VARIABLE min max "pista"
   local intento v
   for intento in 1 2 3; do
@@ -192,7 +191,7 @@ else
   fi
 fi
 
-# ------------------------------------------- 7. bitácora ----------------------------------------------------------------
+# ------------------------------------------- 7. Bitácora ----------------------------------------------------------------
 read -r -p "nota de la corrida (opcional, Enter para omitir): " NOTA
 BL="bitacora_corridas.csv"
 [ -s "$BL" ] || echo "timestamp,modo,variante,n,bag,bateria_antes,bateria_despues,r,b_eff,resultado,observacion,nota" > "$BL"
