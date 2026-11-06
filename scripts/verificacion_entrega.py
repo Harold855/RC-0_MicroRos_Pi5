@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""verificacion_entrega — comprueba el repositorio contra los entregables de RC-0.
+"""verificacion_entrega — comprueba el repositorio con los entregables de RC-0.
 
-INTRODUCCIÓN
-------------
+INTRODUCCIÓN:
 Revisa, sin ROS ni robot, que el repositorio tenga lo que pide el reto:
 archivos, encabezados y filas de los CSV, los cuatro bags, los PNG por bag,
 los valores finales en config/wheel_params.yaml, el README y el informe.
@@ -13,17 +12,12 @@ Estados:
   ERROR      hay algo inconsistente (encabezado distinto, dato sintético, umbral no cumplido).
   AVISO      no se pudo comprobar o conviene revisarlo a mano.
 
-Qué comprueba y qué NO:
-  * Comprueba estructura y umbrales (error de recta final <= 2 %, de giro < 1 %).
-    NO comprueba que las mediciones sean verdaderas ni que el robot esté calibrado.
-  * Rechaza todo lo marcado como sintético (SINTETICO) en CSV, bags o PNG.
-  * El umbral de giro usa la columna error_% de calibration_log.csv, calculada con
+Qué comprueba y que no:
+  - Comprueba estructura y umbrales (error de recta final <= 2 %, de giro < 1 %).
+    no comprueba que las mediciones sean verdaderas ni que el robot esté calibrado.
+  - Rechaza todo lo marcado como sintético (SINTETICO) en CSV, bags o PNG.
+  - El umbral de giro usa la columna error_% de calibration_log.csv, calculada con
     la convención que el grupo haya elegido (por defecto sobre el ángulo reportado).
-
-Uso:
-  python3 scripts/verificacion_entrega.py            # informe; termina con error solo si hay ERROR
-  python3 scripts/verificacion_entrega.py --final    # PENDIENTE y AVISO también cuentan como fallo
-  python3 scripts/verificacion_entrega.py --raiz ruta/al/repo
 """
 
 import argparse
@@ -44,7 +38,6 @@ ENC_CALIB = ["timestamp", "iteracion", "b_eff_antes", "objetivo_deg", "medido_de
 BAGS = ["rc0_recta", "rc0_giro", "rc0_val_recta", "rc0_val_giro"]
 ROLES = ["Integración", "Control", "Planificación", "Percepción"]
 
-
 def _leer(path: str) -> Optional[str]:
     try:
         with open(path, encoding="utf-8") as f:
@@ -52,14 +45,12 @@ def _leer(path: str) -> Optional[str]:
     except OSError:
         return None
 
-
 def _csv(path: str):
     txt = _leer(path)
     if txt is None:
         return None, None
     filas = [r for r in csv.reader(txt.splitlines()) if r]
     return (filas[0] if filas else []), filas[1:]
-
 
 def _num(x: str) -> Optional[float]:
     try:
@@ -71,8 +62,6 @@ def _num(x: str) -> Optional[float]:
 def _sint(txt: str) -> bool:
     return "SINTETICO" in txt.upper()
 
-
-# --------------------------------------------------------------------------
 def revisar_csv(raiz: str) -> List[Item]:
     out: List[Item] = []
     for nombre, enc in (("linea_recta.csv", ENC_RECTA), ("calibration_log.csv", ENC_CALIB), ("validacion.csv", ENC_VALID)):
@@ -122,7 +111,6 @@ def revisar_csv(raiz: str) -> List[Item]:
             if any(f[0] != "A2" for f in filas if f):
                 out.append((AVISO, nombre, "hay filas con variante distinta de A2 (S-003 valida en A2)"))
     return out
-
 
 def revisar_bags_y_plots(raiz: str) -> List[Item]:
     out: List[Item] = []
@@ -179,7 +167,6 @@ def revisar_yaml(raiz: str) -> List[Item]:
             out.append((OK, "config/wheel_params.yaml", f"{k}: {vals[k]}"))
     return out
 
-
 def revisar_readme(raiz: str) -> List[Item]:
     txt = _leer(os.path.join(raiz, "README.md"))
     if txt is None:
@@ -207,7 +194,6 @@ def _paginas_pdf(ruta: str) -> Tuple[Optional[int], str]:
         return (n or None), "estimado (sin pypdf)"
     except Exception as e:  # PDF dañado
         return None, f"no se pudo leer: {e}"
-
 
 def revisar_otros(raiz: str) -> List[Item]:
     out: List[Item] = []
@@ -249,11 +235,9 @@ def revisar_otros(raiz: str) -> List[Item]:
         out.append((AVISO, "nombre del repositorio", f"el reto pide capytown_G<n>; esta carpeta se llama {nombre} (revisa el nombre del repo remoto)"))
     return out
 
-
 def verificar(raiz: str) -> List[Item]:
     return (revisar_csv(raiz) + revisar_bags_y_plots(raiz) + revisar_yaml(raiz)
             + revisar_readme(raiz) + revisar_otros(raiz))
-
 
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="Comprueba el repositorio contra los entregables de RC-0.")
@@ -269,7 +253,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     print("Recuerda: esto valida estructura y umbrales, no que las mediciones sean reales ni que el robot esté calibrado.")
     malo = cuenta[ERR] or (a.final and (cuenta[PEND] or cuenta[AVISO]))
     return 1 if malo else 0
-
 
 if __name__ == "__main__":
     sys.exit(main())
