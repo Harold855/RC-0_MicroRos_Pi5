@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """plot_odom — gráficas de odometría a partir de un bag de ROS 2 (RC-0, parte E).
 
-INTRODUCCIÓN
-------------
+INTRODUCCIÓN:
 Recibe la carpeta de un bag (no un archivo) y genera dos PNG:
 
-  <nombre>_xy.png       trayectoria x–y, relativa a la pose inicial y con ejes
+  - <nombre>_xy.png       trayectoria x–y, relativa a la pose inicial y con ejes
                         iguales; ahí se ve el desvío lateral de una recta.
-  <nombre>_theta_t.png  orientación θ(t) acumulada (desenrollada), en grados;
+  - <nombre>_theta_t.png  orientación θ(t) acumulada (desenrollada), en grados;
                         un giro de 360° llega a ±360°, no vuelve a 0.
 
 Flujo:
@@ -18,16 +17,6 @@ Flujo:
      del bag, y si hay varios (o ninguno) el script falla listando lo que hay.
   3. Leer los mensajes con rosbag2_py y deserializarlos como Odometry.
   4. Calcular con odom_utils (funciones puras) y dibujar con matplotlib.
-
-La lectura (paso 3) necesita ROS 2 con rosbag2_py: corre en el contenedor del
-robot o en una máquina con ROS 2 Humble. El resto (cálculo y dibujo) no.
-
-Uso:
-  python3 capytown_esan/plot_odom.py bags/rc0_recta
-  python3 capytown_esan/plot_odom.py bags/rc0_giro --topic /odom_raw --salida plots
-
-Estado: la lectura con rosbag2_py NO se ha probado contra un bag real. Lo
-verificado hasta ahora son las funciones puras y el dibujo con datos sintéticos.
 """
 
 import argparse
@@ -44,10 +33,7 @@ except ImportError:  # pragma: no cover
 
 TIPO_ODOM = "nav_msgs/msg/Odometry"
 
-
-# --------------------------------------------------------------------------
 # Lectura del bag (requiere ROS 2)
-# --------------------------------------------------------------------------
 def storage_id(bag: str) -> str:
     """Lee `storage_identifier` (sqlite3 o mcap) del metadata.yaml del bag."""
     meta = os.path.join(bag, "metadata.yaml")
@@ -143,10 +129,7 @@ def leer_odometria(bag: str, topic: Optional[str] = None):
     t0 = t[0]
     return usado, [a - t0 for a in t], poses, vel
 
-
-# --------------------------------------------------------------------------
 # Resumen y dibujo (sin ROS)
-# --------------------------------------------------------------------------
 def resumen(t: Sequence[float], poses: Sequence[ou.Pose]) -> dict:
     norma, longitudinal, lateral = ou.desplazamiento(poses)
     theta = ou.yaw_relativo([p[2] for p in poses])
@@ -159,7 +142,6 @@ def resumen(t: Sequence[float], poses: Sequence[ou.Pose]) -> dict:
         "theta_final_deg": math.degrees(theta[-1]),
         "reinicios": ou.detectar_reinicios(t, poses),
     }
-
 
 def graficar(
     t: Sequence[float],
@@ -215,8 +197,6 @@ def graficar(
     plt.close(fig)
     return ruta_xy, ruta_th
 
-
-# --------------------------------------------------------------------------
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="Gráficas x–y y θ(t) de un bag de odometría.")
     ap.add_argument("bag", help="carpeta del bag (contiene metadata.yaml)")
