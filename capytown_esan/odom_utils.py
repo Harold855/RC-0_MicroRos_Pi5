@@ -40,10 +40,7 @@ from typing import List, Optional, Sequence, Tuple
 
 Pose = Tuple[float, float, float]  # (x [m], y [m], yaw [rad])
 
-
-# --------------------------------------------------------------------------
 # Orientación
-# --------------------------------------------------------------------------
 def quat_to_yaw(x: float, y: float, z: float, w: float) -> float:
     """Yaw (rad, en (-π, π]) de un cuaternión; ignora roll y pitch."""
     return math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
@@ -77,10 +74,7 @@ def yaw_relativo(yaws: Sequence[float]) -> List[float]:
         return []
     return [a - u[0] for a in u]
 
-
-# --------------------------------------------------------------------------
 # Traslación
-# --------------------------------------------------------------------------
 def desplazamiento(poses: Sequence[Pose]) -> Tuple[float, float, float]:
     """(norma, longitudinal, lateral) entre la primera y la última pose.
 
@@ -96,7 +90,6 @@ def desplazamiento(poses: Sequence[Pose]) -> Tuple[float, float, float]:
     lateral = -dx * math.sin(th0) + dy * math.cos(th0)
     return math.hypot(dx, dy), longitudinal, lateral
 
-
 def trayectoria_relativa(poses: Sequence[Pose]) -> List[Tuple[float, float]]:
     """Puntos (x, y) en el marco del robot al inicio: origen en la pose inicial,
     eje +X hacia donde miraba el robot. Así una recta ideal es una línea sobre
@@ -107,10 +100,7 @@ def trayectoria_relativa(poses: Sequence[Pose]) -> List[Tuple[float, float]]:
     c, s = math.cos(th0), math.sin(th0)
     return [((x - x0) * c + (y - y0) * s, -(x - x0) * s + (y - y0) * c) for x, y, _ in poses]
 
-
-# --------------------------------------------------------------------------
 # Errores
-# --------------------------------------------------------------------------
 def error_pct_lineal(d_real: float, d_odom: float) -> float:
     """Error del reto: 100 · |d_real − d_odom| / d_real."""
     if d_real == 0:
@@ -136,20 +126,16 @@ def error_pct_angular(theta_rep: float, theta_med: float, denominador: str = "re
         raise ValueError("el denominador del error no puede ser 0")
     return 100.0 * abs(rep - med) / base
 
-
-# --------------------------------------------------------------------------
 # Segmentación y control de calidad
-# --------------------------------------------------------------------------
 def ventana_movimiento(
     t: Sequence[float],
     velocidad: Sequence[float],
     umbral: float = 0.01,
 ) -> Optional[Tuple[int, int]]:
     """Índices (inicio, fin) del primer tramo en que |velocidad| > umbral.
-
     Sirve para recortar la parte en que el robot se mueve y que reposicionar el
     robot a mano antes o después no contamine la medida. `velocidad` puede ser
-    |twist.linear.x| (rectas) o |twist.angular.z| (giros) de la odometría, o
+    twist.linear.x (rectas) o twist.angular.z (giros) de la odometría, o
     el /cmd_vel remuestreado. Devuelve None si nunca supera el umbral.
     """
     if len(t) != len(velocidad):
@@ -177,10 +163,9 @@ def segmentos_movimiento(
     hueco_s: float = 0.5,
 ) -> List[Tuple[int, int]]:
     """Todos los tramos de movimiento, como [(inicio, fin), ...] en orden temporal.
-
     Dos tramos separados por menos de `hueco_s` segundos de reposo se fusionan
     (un bache momentáneo de velocidad no parte una corrida en dos). Sirve para
-    bags con varias corridas, p. ej. las dos rectas de validación.
+    bags con varias corridas, por ejemplo las dos rectas de validación.
     """
     if len(t) != len(velocidad):
         raise ValueError("t y velocidad deben tener la misma longitud")
@@ -208,9 +193,8 @@ def detectar_reinicios(
     hueco_max_s: float = 1.0,
 ) -> List[Tuple[int, str]]:
     """Índices donde la odometría parece haberse reiniciado o perdido datos.
-
-    Los RosCar pueden reiniciarse durante las pruebas y la pose vuelve a
-    (0, 0, 0). Se marca como sospechoso:
+    Sucede cuando los Roscar puedan reiniciarse durante las pruebas y la pose volver a
+    (0, 0, 0). Entonces, se marca como sospechoso:
       - un salto de posición entre muestras mayor que `salto_max_m`;
       - un hueco temporal mayor que `hueco_max_s`.
     """
