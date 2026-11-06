@@ -36,7 +36,3 @@
 
 ---
 
-## Verificación posterior (se registran por separado)
-
-Los resultados obtenidos durante las pruebas y la explicación de las diferencias entre predicción y medición se documentarán en `informe.pdf` y en los archivos `linea_recta.csv`, `calibration_log.csv` y `validacion.csv`. **No se modificarán las predicciones originales de este archivo.**
-
