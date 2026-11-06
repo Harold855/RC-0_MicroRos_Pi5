@@ -172,7 +172,7 @@ Comandos: `corrida recta A2 N` y `corrida giro A2 N` (el giro horario usa `secue
 **Archivos:** `validacion.csv` (`variante, prueba, valor_real, valor_odom, error_%`), `bags/rc0_val_recta/`, `bags/rc0_val_giro/`.
 
 ### Parte E — Gráficas e informe
-**¿Qué es lo que se hace?** `plot_odom.py` lee cada bag final y genera dos PNG: la trayectoria x-y y la orientación θ(t) (con el ángulo desenvuelto, de modo que 360° se ve como 360° y no como 0°). Con los CSV, `generar_tablas_informe.py` arma las tablas del informe de una página: predicción, recta, `b_eff`, validación y explicación de las diferencias entre predicción y medición. Las gráficas de B y C se encuentran en `plots/`. La D no tiene un gráfico exacto por falta de pruebas
+**¿Qué es lo que se hace?** `plot_odom.py` lee cada bag final y genera dos PNG: la trayectoria x-y y la orientación θ(t) (con el ángulo desenvuelto, de modo que 360° se ve como 360° y no como 0°). Con los CSV, `generar_tablas_informe.py` arma las tablas del informe de una página: predicción, recta, `b_eff`, validación y explicación de las diferencias entre predicción y medición. Las gráficas de A, B y C se encuentran en `plots/`, estas fueron reconstruidas, debido a que el grupo no consiguió descargar las gráficas generadas por `/odom_util`, pero gracias a la IA, logramos reconstruirlas, tal cual estaba la original (solo teníamos capturas en baja calidad de las originales). La D no tiene un gráfico exacto por falta de pruebas.
 
 **Archivos:** `plots/`, `informe.pdf`.
 
