@@ -34,5 +34,8 @@
 
 **Motivo:** Si los dos equipos están en la misma red ROS 2, comparten dominio y no tienen otro aislamiento, sus nodos pueden descubrirse mutuamente. Si publican y escuchan los mismos nombres de tópicos, como `/cmd_vel` y `/odom`, podrían mezclarse los datos e incluso recibirse comandos dirigidos al otro robot. Por eso, cada grupo debe usar el dominio asignado y configurarlo de manera consistente en la Raspberry Pi 5 y en la placa.
 
+
+**Nota Adicional:** Las predicciones no se modificaron desde el 30/10/2026, solo se añadió esta nota el 05/11/2026.
+
 ---
 
