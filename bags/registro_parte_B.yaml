@@ -1,0 +1,35 @@
+tipo_documento: evidencia_experimental_reconstruida_desde_logs
+parte: B
+variante: A1_Torre
+robot_fisico: ROSCar_4
+grupo: 8
+seccion: S-003
+corrida: 4
+identificador_rosbag: rc0_recta_c4_20260715_132011
+ruta_rosbag_original: bags/rc0_recta_c4_20260715_132011
+nombre_db3_observado: rc0_recta_c4_20260715_132011_0.db3
+fecha_de_archivo_pi: '2026-07-15'
+nota_fecha: 'Reloj de la Raspberry Pi desfasado; la fecha del nombre de bag no representa necesariamente la fecha real de la sesión.'
+parametros:
+  wheel_radius_m: 0.03145
+  wheel_separation_m: 0.2259
+  velocidad_ordenada_m_s: 0.100
+  velocidad_angular_ordenada_rad_s: 0.0
+  duracion_movimiento_programada_s: 10.0
+registro_mediciones:
+  distancia_fisica_m: 0.9650
+  distancia_odom_m: 0.9602
+  error_lineal_porcentaje_registrado: 0.5017
+  desvio_fisico_lateral_m: 0.0220
+  desvio_fisico_lado: derecha
+  desplazamiento_longitudinal_odom_m: 0.9600
+  desplazamiento_lateral_odom_m: -0.0146
+  angulo_final_odom_grafica_deg: -0.96
+informacion_observada_del_bag:
+  formato_almacenamiento: sqlite3
+  duracion_total_informada_s: 20.551
+  mensajes_totales_informados: 818
+  muestras_odom_mostradas_en_plot: 229
+  ruta_grafica_xy: plots/rc0_recta_c4_20260715_132011_xy.png
+  ruta_grafica_theta_t: plots/rc0_recta_c4_20260715_132011_theta_t.png
+
