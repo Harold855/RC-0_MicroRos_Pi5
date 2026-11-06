@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-# Cambia EN CALIENTE un parámetro de odom_corrector (r o b_eff) con validación, confirmación y registro.
+# Cambia un parámetro de odom_corrector (r o b_eff) con validación, confirmación y registro.
 # Uso:  bash scripts/aplicar_param.sh <wheel_radius|wheel_separation> <valor_en_metros> ["nota"]
-# Ej.:  bash scripts/aplicar_param.sh wheel_radius 0.0331 "tras las corridas 1-3"
-#
-# Este script NO calcula el valor nuevo: lo calcula el grupo (es pregunta de defensa).
+# El propósito de este script es no calcular el valor nuevo, pues este lo calcula el grupo.
 # Solo evita errores de captura, pide confirmación, comprueba que el cambio se aplicó y lo anota en bitacora_params.csv.
 # El cambio es en memoria: se pierde si se reinicia el contenedor. Al final, anota los valores finales en el YAML.
 
@@ -38,7 +36,6 @@ ANTES="$(timeout 10 ros2 param get /odom_corrector "$PARAM" 2>/dev/null | awk '{
 echo "Parámetro : $PARAM  —  $ETQ"
 echo "Actual    : $ANTES m"
 echo "Nuevo     : $VALOR m"
-echo "Recuerda: un solo parámetro a la vez (primero r, después b_eff) y no se cambia nada en A2 (validación)."
 read -r -p "Escribe SI para aplicar: " RESP
 [ "$RESP" = "SI" ] || { echo "Cancelado: no se cambió nada."; exit 5; }
 
