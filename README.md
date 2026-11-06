@@ -5,18 +5,18 @@ Nuestro grupo pone en ejecución al robot, verifica la cadena **placa → micro-
 que se usarán en los retos posteriores: el radio de rueda **r** y el ancho de vía efectivo **b_eff**.
 
 ## Equipo 
-Número| Integrante | Parte realizado | Rol Asignado | 
+|Número| Integrante | Parte realizado | Rol Asignado | 
 |---|---|---|---|
 |1| Jorge Rivera| parte A | Control |
 |2| Harold Payco| parte B | Integración y planificacion |
 |3| Sebastian Escobar | parte C | Percepcion |
 
-## Datos 
-
+## Datos
+| | |
 |---|---|
 | Sección | **S-003** |
-| Variantes | **A1 «Torre»** (calibración, Partes B y C) · **A2 «Escalón»** (validación, Parte D) |
-| Robot | **RosCar 4** (hostname `roscar4`, escritorio remoto `10.42.0.1::5900`). Reemplaza al RosCar 8, |
+| Variantes | **A1 «Torre»** (calibración, Partes B y C), **A2 «Escalón»** (validación, Parte D) |
+| Robot | **RosCar 4** (hostname `roscar4`, escritorio remoto `10.42.0.1::5900`). Reemplaza al RosCar 8 |
 | `ROS_DOMAIN_ID` | **8** (equipo n → ROS_DOMAIN:n), en la Pi y en la placa. La placa del RosCar 4 venía con 20, el valor de fábrica de Yahboom |
 | `r` (adoptado) | **0.03145 m** (inicial del docente: 0.0311 m) |
 | `b_eff` (adoptado) | **0.2138 m** (inicial común: 0.2259 m) |
