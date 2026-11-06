@@ -8,34 +8,35 @@ Registrada el 30/10/2026, antes de cualquier medición. Para una orden de **0.10
 
 ## Parte A - Arranque
 
-Se verificó la cadena placa → micro-ROS → ROS 2 y la disponibilidad de `/cmd_vel`, `/odom`, `/imu` y `/scan`. Frecuencias observadas: **/odom ≈ 11.1 Hz** e **/imu ≈ 23.5 a 25.0 Hz**. La placa traía `ROS_DOMAIN_ID = 20` (valor de fábrica); se escribió **8** con `config_robot.py` y se verificó el aislamiento: en el dominio 20 ya no aparece ningún nodo y en el 8 aparecen `/YB_Car_Node` y `/odom_corrector`.
+Se verificó la cadena placa → micro-ROS → ROS 2 y la disponibilidad de `/cmd_vel`, `/odom`, `/imu` y `/scan`. Frecuencias observadas: **/odom ≈ 11.1 Hz** e **/imu ≈ 23.5 a 25.0 Hz**. La placa del RosCar 4 traía `ROS_DOMAIN_ID = 20` (valor de fábrica); se escribió **8** con `config_robot.py` y se verificó el aislamiento: en el dominio 20 ya no aparece ningún nodo y en el 8 aparecen `/YB_Car_Node` y `/odom_corrector`.
 
-## Parte B - Calibración lineal de r (A1)
+## Parte B - Calibración lineal de r (A1, RosCar 4)
 
 | Corrida | r [m] | d_real [m] | d_odom [m] | error | desvío lateral [m] |
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | 0.0311 | 0.960 | 0.9596 | 0.04 % | 0.030 |
-| 2 | 0.0311 | 0.979 | 0.9541 | 2.54 % | 0.022 |
-| 3 | 0.0311 | 0.964 | 0.9557 | 0.86 % | 0.018 |
+| 1 | 0.0311 | 0.957 | 0.9487 | 0.87 % | 0.010 |
+| 2 | 0.0311 | 0.963 | 0.9453 | 1.83 % | 0.020 |
+| 3 | 0.0311 | 0.965 | 0.9587 | 0.65 % | 0.021 |
+| 4 | **0.03145** | 0.965 | 0.9602 | **0.50 %** | 0.022 |
 
-Las tres corridas se hicieron con **r = 0.0311 m** (valor de partida). Promedio: `d_real` = 0.9677 m, `d_odom` = 0.9565 m, error medio ≈ **1.1 %**; una corrida (la 2) supera el 2 %. En las tres, `d_odom ≤ d_real`. `d_odom` es muy repetible (5 mm de dispersión) y `d_real` varía 1.9 cm entre corridas, comparable a la tolerancia del 2 %.
+Las corridas 1 a 3 se hicieron con el `r = 0.0311 m` de partida: promedio `d_real` = 0.9617 m, `d_odom` = 0.9509 m, error medio ≈ 1.1 %, y `d_odom < d_real` en las tres (el modelo subestima la distancia, así que `r` debe **aumentar**). Se ajustó `r` a **0.03145 m** (ajuste hecho por el grupo a partir de estos datos) y la corrida 4 dio 0.50 %. *Prueba de sensibilidad (no son corridas de calibración):* con r = 0.023 m (el radio geométrico) el error fue 27.9 %, con 0.021 m 33.3 % y con 0.025 m 20.4 %; confirman que `r` es un parámetro efectivo y no el radio medido con regla. Después se volvió a 0.03145 m. *Pendiente:* corridas de confirmación con r = 0.03145 m (tres, para E3).
 
-## Parte C - Calibración de b_eff (A1)
+## Parte C - Calibración de b_eff (A1, RosCar 4, con r = 0.03145 m)
+
+Medidas físicas: **W = 0.135 m** (centro a centro), diámetro de rueda 4.6 cm. El ángulo real se midió con el **método de la cuerda** (δ = 2·arcsen(c/2L), L = 50 cm). Los giros preliminares con r = 0.0311 (b_eff = 0.2259: 413° y 405°; b_eff = 0.2008: 315° y 320°) se contradicen entre sí y se descartan como evidencia (ver `docs/registro_roscar4.md`).
 
 | Iteración | b_eff usado [m] | Sentido | Ángulo real | /odom acum. | Error | b_eff propuesto [m] |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| | | | | | | |
+| 9 | 0.2125 | antihorario | 352° | 360° | 2.22 % | 0.2173 |
+| 10 | 0.2152 | antihorario | 375° | 360° | 4.17 % | 0.2066 |
+| 11 | 0.2138 | antihorario | 358° | 360° | 0.56 % | 0.2150 |
+| 12 | 0.2138 | antihorario | 358° | 360° | 0.56 % | 0.2150 |
 
-## Parte D - Validación sin recalibrar (A2)
-
-| Prueba | Valor real | Valor /odom | Error |
-|:---:|:---:|:---:|:---:|
-| Recta 1 | | | |
-| Recta 2 | | | |
-| Giro 360° (horario) | | | |
+Valor adoptado: **b_eff = 0.2138 m**, error 0.56 % en dos giros seguidos (< 1 %). El sentido del cambio es coherente: al aumentar `b_eff` el robot gira más antes de que `/odom` marque 360° (352° → 375°). Limitaciones: la serie no parte de W = 0.135 m (las iteraciones preliminares se hicieron con otros valores) y el paso de 1 mm de `b_eff` mueve el giro ≈ 1.7°, del orden de la resolución de la medida con cinta; los dos 358° son idénticos y no prueban repetibilidad por sí solos.
 
 ## Parte E y análisis final
 
-**Predicción vs. medición (recta).** Se predijeron 98 cm con cinta y se midieron entre 96.0 y 97.9 cm (promedio 96.8 cm): la distancia real quedó a ~1.2 cm de lo predicho. Para `/odom` se predijeron 100 cm, y se obtuvieron entre 95.4 y 96.0 cm. La predicción de odometría suponía los parámetros nominales del firmware (`r0 = 0.0325 m`); con el `r = 0.0311 m` de partida, `odom_corrector` escala la distancia por `r / r0 = 0.9569`, de modo que `/odom` marca menos que el nominal. Las predicciones del giro y del dominio se evalúan con las Partes C y D.
+**Predicción vs. medición (recta).** Se predijeron 98 cm con cinta y se midieron entre 95.7 y 96.5 cm (promedio 96.2 cm con r = 0.0311): la distancia real quedó a ~1.8 cm de lo predicho. Para `/odom` se predijeron 100 cm y se obtuvieron entre 94.5 y 95.9 cm. La predicción de odometría suponía los parámetros nominales del firmware (`r0 = 0.0325 m`); con `r = 0.0311 m`, `odom_corrector` escala la distancia por `r / r0 = 0.9569`, de modo que `/odom` marca menos que el nominal. **Giro:** la predicción (gira menos de 360° con b_eff = W) no se contrastó tal cual, porque la serie de la Parte C no partió de W; con los b_eff efectivos (≈ 0.21 m, bastante mayor que W = 0.135 m) el robot giró 352°–375° cuando `/odom` marcó 360°. Esto es coherente con que `b_eff` sea un parámetro efectivo (deslizamiento de las ruedas, huella de contacto) y no el ancho geométrico. La predicción del dominio se evalúa con la Parte A (dominio 20 vacío).
 
-**Parámetros:** r = 0.0311 m (Parte B) | b_eff de partida = 0.2259 m | **Archivos:** setup_log.txt, linea_recta.csv, calibration_log.csv, validacion.csv, bags rosbag, plot_odom.py y gráficas
+**Parámetros:** r = 0.03145 m (Parte B; inicial 0.0311) | b_eff = 0.2138 m (Parte C; inicial del docente 0.2259) | **Archivos:** setup_log.txt, linea_recta.csv, calibration_log.csv, validacion.csv, bags rosbag, plot_odom.py y gráficas
+
